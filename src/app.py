@@ -1,7 +1,7 @@
 from flask import Flask
-from .controllers.initial import getHome
+from .database.db import db
+from .routes.comuna_routes import comunasRoutes
+
 
 app = Flask(__name__)
-
-# Routes
-app.add_url_rule("/", "getHome", getHome, methods=["GET"])
+app.register_blueprint(comunasRoutes)

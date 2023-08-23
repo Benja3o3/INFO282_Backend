@@ -1,2 +1,0 @@
-def getHome():
-    return "WENA"
