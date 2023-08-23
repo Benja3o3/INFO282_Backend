@@ -1,0 +1,2 @@
+def getHome():
+    return "WENA"
