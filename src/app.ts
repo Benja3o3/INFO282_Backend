@@ -1,5 +1,6 @@
 import express, { Application } from "express";
 import cors from "cors";
+import indexRoutes from "./routes/index.routes";
 
 export class App {
   public app: Application;
@@ -8,6 +9,7 @@ export class App {
     this.app = express();
     this.middlewares();
     this.settings();
+    this.routes();
   }
 
   settings() {
@@ -18,6 +20,10 @@ export class App {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(cors());
+  }
+
+  routes() {
+    this.app.use(indexRoutes);
   }
 
   async listen() {
