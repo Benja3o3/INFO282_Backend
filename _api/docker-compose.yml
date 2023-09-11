@@ -1,20 +1,15 @@
 version: "3.8"
 services:
-
-  db_geo:
-    build: ./db_geo/
-    container_name: db_geo
+  databases:
+    build: ./databases/
+    container_name: databases
     restart: always
     ports: 
       - "3310:5432"
+    volumes:
+      - ./databases/db_processing.sql:/docker-entrypoint-initdb.d/db_processing.sql
+      - ./databases/db_transactional.sql:/docker-entrypoint-initdb.d/db_transactional.sql
 
-  db_transactional:
-    build: ./db_transactional/
-    container_name: db_transactional
-    restart: always
-    ports: 
-      - "3309:5432"
-    
   pgadmin:
     image: dpage/pgadmin4
     environment: 
@@ -23,6 +18,6 @@ services:
     ports:
       - "3380:80"
     depends_on:
-      - db_geo
+      - databases
 
 

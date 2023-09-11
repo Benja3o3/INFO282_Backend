@@ -23,7 +23,3 @@ db = create_engine(db_string)
 Session = sessionmaker(bind=db)
 session = Session()
 
-
-# Reflect the database tables
-metadata = MetaData()
-metadata.reflect(bind=db)
