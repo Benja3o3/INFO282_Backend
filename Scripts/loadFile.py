@@ -1,38 +1,23 @@
 # import mimetypes
 import os
 import FactoryExtractExcel
+import transformData
+'''
+    Cargar el ultimo archivo dentro del directorio en la nube
+    - De momento solo buscara el ultimo archivo en local.
+'''
 
 
-EXTENSION_EXCEL = {
-    "xlsx",
-    "xlsm",
-    "xlsb",
-    "xltx",
-    "xltm",
-    "xls",
-    "xlt",
-    "xml",
-    "xlam",
-    "xlw",
-}
-EXTENSION_FLAT = {"csv", "txt"}
-EXTENSION_JSON = {"json"}
-EXTENSION_SHP = {"zip"}
 
-extractExcel = FactoryExtractExcel()
-#proJson = FactoryProcessorJson()
-#proFlat = FactoryProcessorFlat()
-#proShp = FactoryProcessorShp()
 
-class LoadFile:
+
+class LoadFile:  
     # Constructor method (initialize object attributes)
     def __init__(self, _id ):
         self._id = _id
         self.fileURL = './Files/' + self._id
         self.fileName = None
-        self.getFileName()
-        self.getFileExtension()
-
+        self.getFileName()  # Consigue el ultimo archivo subido a esa carpeta en especifico
 
     def getFileName(self):
         files = os.listdir(self.fileURL)
@@ -40,29 +25,7 @@ class LoadFile:
         files.sort(key=lambda x: os.path.getmtime(os.path.join(self.fileURL, x)), reverse=True)
         if files:
             self.fileName = files[0]
-
-    def getFileExtension(self):
-        typeFile = self.file.rsplit(".", 1)[1].lower()
-
-        if typeFile in EXTENSION_EXCEL:
-            return extractExcel.extractData(self.fileURL)
-        else:
-            return {"error": "Invalid type"}    
-
-            
-    '''
-        if typeFile in EXTENSION_JSON:
-            return proJson.saveData(self.fileURL)
-        elif typeFile in EXTENSION_FLAT:
-            return proFlat.saveData(self.fileURL)
-        elif typeFile in EXTENSION_EXCEL:
-            return proExcel.saveData(self.fileURL)
-        elif typeFile in EXTENSION_SHP:
-            return proShp.saveData(self.fileURL)
-        else:
-            return {"error": "Invalid type"}    
-    '''
-
-
-
-_loadfile = LoadFile("IND_COLEGIO_01")
+    
+    def getDirectionFile(self):
+        return self.fileURL + self.fileName
+    

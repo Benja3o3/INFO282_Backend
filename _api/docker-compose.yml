@@ -1,0 +1,28 @@
+version: "3.8"
+services:
+
+  db_geo:
+    build: ./db_geo/
+    container_name: db_geo
+    restart: always
+    ports: 
+      - "3310:5432"
+
+  db_transactional:
+    build: ./db_transactional/
+    container_name: db_transactional
+    restart: always
+    ports: 
+      - "3309:5432"
+    
+  pgadmin:
+    image: dpage/pgadmin4
+    environment: 
+      PGADMIN_DEFAULT_EMAIL: "admin@admin.com"
+      PGADMIN_DEFAULT_PASSWORD: "admin"
+    ports:
+      - "3380:80"
+    depends_on:
+      - db_geo
+
+
