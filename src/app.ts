@@ -1,6 +1,10 @@
 import express, { Application } from "express";
 import cors from "cors";
 import indexRoutes from "./routes/index.routes";
+import { pool } from "./db/database";
+import ComunaRoutes from "./routes/comunas.routes";
+import DimensionRoutes from "./routes/dimension.routes";
+import IndicadorRoutes from "./routes/indicador.routes";
 
 export class App {
   public app: Application;
@@ -24,6 +28,14 @@ export class App {
 
   routes() {
     this.app.use(indexRoutes);
+    this.app.use(ComunaRoutes);
+    this.app.use(DimensionRoutes);
+    this.app.use(IndicadorRoutes);
+  }
+
+  async dbConnection() {
+    await pool.connect();
+    console.log("db connection successful");
   }
 
   async listen() {
