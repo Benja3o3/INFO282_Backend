@@ -9,7 +9,15 @@ export async function getDimensiones(req: Request, res: Response) {
 
 export async function getDimension(req: Request, res: Response) {
   const comuna = await pool.query(
-    "SELECT cut from comuna WHERE cut = " + req.params.id
+    "SELECT * from comuna WHERE cut = " + req.params.id
   );
   return res.json(comuna.rows);
+}
+
+export async function getDimensionByComuna(req: Request, res: Response) {
+  const dimensiones = await pool.query(
+    "SELECT * FROM dimension WHERE comuna_id = " + req.params.id
+  );
+  return res.json(dimensiones.rows);
+  console.log(dimensiones.rows);
 }
