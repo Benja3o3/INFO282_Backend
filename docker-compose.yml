@@ -1,0 +1,37 @@
+version: "3.8"
+services:
+  api:
+    build:
+      context: ./app/
+      dockerfile: Dockerfile
+      target: base
+    volumes:
+      - ./app/src:/home/node/app/src
+    container_name: api
+    expose:
+      - '5002'
+    ports:
+      - '5002:5002'
+    command: npm run dev
+    
+  databases:
+    build: ./databases/
+    container_name: databases
+    restart: always
+    ports: 
+      - "3310:5432"
+    volumes:
+      - ./databases/db_processing.sql:/docker-entrypoint-initdb.d/db_processing.sql
+      - ./databases/db_transactional.sql:/docker-entrypoint-initdb.d/db_transactional.sql
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment: 
+      PGADMIN_DEFAULT_EMAIL: "admin@admin.com"
+      PGADMIN_DEFAULT_PASSWORD: "admin"
+    ports:
+      - "3380:80"
+    depends_on:
+      - databases
+
+

@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: base
+    volumes:
+      - ./src:/home/node/app/src
+      - ./nodeamon.json:/home/node/app/nodeamon.json
+    container_name: api
+    expose:
+      - '5002'
+    ports:
+      - '5002:5002'
+    command: npm run dev
