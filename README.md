@@ -24,14 +24,14 @@ Una vez ingresado, se pediran las credenciales, en este caso siendo.
 ## Vinculación PGADMIN DB
 Para vincular la base de datos en PGADMIN se debe hacer click derecho en servidor, para luego presionar register server.
 ``` 
- >>  **General**
+>>  **General**
 
-     Name: { El de su preferencia }
+    Name: { El de su preferencia }
 
 >>   **Connection**
 
->> Host_name: **databases** { O el nombre que tenga el contenedor de la base de datos a ingresar }
+    Host_name: **databases** { O el nombre que tenga el contenedor de la base de datos a ingresar }
 
->> Port: **5542** { Puerto de la base de datos }
+    Port: **5542** { Puerto de la base de datos }
 ``` 
 
