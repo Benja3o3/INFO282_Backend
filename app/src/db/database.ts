@@ -5,5 +5,5 @@ export const pool = new Pool({
   database: "db_processing",
   user: "root",
   password: "root",
-  port: 5432
+  port: 5432,
 });

@@ -1,15 +1,18 @@
 import { Request, Response } from "express";
 import { pool } from "../db/database";
+import {
+  getAllIndicatorsFromOnlyComuna,
+  getAllComunas,
+} from "../db_querys/comunas.querys";
 
 export async function getComunas(req: Request, res: Response) {
-  const comunas = await pool.query("SELECT * FROM comuna");
-  console.log(comunas.rows);
+  const comunas = await pool.query(getAllComunas);
   return res.json(comunas.rows);
 }
 
 export async function getComuna(req: Request, res: Response) {
   const comuna = await pool.query(
-    "SELECT cut from comuna WHERE cut = " + req.params.id
+    getAllIndicatorsFromOnlyComuna(req.params.id)
   );
   return res.json(comuna.rows);
 }
