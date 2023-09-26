@@ -1,3 +1,4 @@
+
 import pandas as pd
 import json
 
@@ -29,9 +30,10 @@ df = df[['coordinates', 'Region', 'codregion']]
 
 nombresModelo = {
     'codregion': 'CUT',
-    'Comuna': 'nombre',
+    'Region': 'nombre',
     'coordinates': 'geometria'
 }
 
 df.rename(columns=nombresModelo, inplace=True)
-df.to_json('regionesDB.json', orient='records', lines = True)
+
+df.to_json('regionesDB.json', orient='records', lines=True, default_handler=str, force_ascii=False)

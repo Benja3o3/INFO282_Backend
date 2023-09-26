@@ -27,6 +27,10 @@ df = df[['cod_comuna', 'Comuna', 'coordinates', 'codregion']]
 
 poblacionDF= pd.read_csv('./files/Covid-19.csv')
 poblacionDF= poblacionDF[['Codigo comuna', 'Poblacion']]
+poblacionDF = poblacionDF.dropna(subset=['Poblacion'])
+poblacionDF['Poblacion'] = poblacionDF['Poblacion'].astype(int)
+
+
 resultadoDF = poblacionDF.merge(df, left_on='Codigo comuna', right_on='cod_comuna', how='inner')
 resultadoDF.drop("Codigo comuna", axis=1, inplace = True)
 
@@ -40,4 +44,8 @@ nombresModelo = {
 }
 
 resultadoDF.rename(columns=nombresModelo, inplace=True)
-resultadoDF.to_json('comunasDB.json', orient='records', lines =True)
+print(resultadoDF['poblacion'])
+#Solucion errores
+
+
+resultadoDF.to_json('comunasDB.json', orient='records', lines=True, default_handler=str, force_ascii=False)

@@ -44,7 +44,8 @@ CREATE TABLE tempRegion (data jsonb);
 COPY tempRegion (data) FROM '/docker-entrypoint-initdb.d/jsonFiles/regionesDB.json';
 
 INSERT INTO Region
-SELECT (data->>'CUT')::INT, (data ->> 'nombre'), 
+SELECT (data->>'CUT')::INT, 
+(data ->> 'nombre')::VARCHAR(255) as nombre, 
 ST_SetSRID(ST_Multi(ST_GeomFromGeoJSON(data->>'geometria')), 4326)
 FROM tempRegion;
 
@@ -52,11 +53,12 @@ FROM tempRegion;
 
 
 CREATE TABLE tempComuna (data jsonb);
-COPY tempComuna (data) FROM '/docker-entrypoint-initdb.d/jsonFiles/regionesDB.json';
+COPY tempComuna (data) FROM '/docker-entrypoint-initdb.d/jsonFiles/comunasDB.json';
 
 INSERT INTO Comuna
-SELECT (data->>'CUT')::INT, (data ->> 'nombre')::VARCHAR(255), 
-        (data->>'poblacion')::INT, 
+SELECT (data->>'CUT')::INT, 
+        (data ->> 'nombre')::VARCHAR(255) as nombre, 
+        (data->> 'poblacion')::INT, 
         ST_SetSRID(ST_Multi(ST_GeomFromGeoJSON(data->>'geometria')), 4326)::GEOMETRY,
         (data ->> 'region_id')::INT
 FROM tempComuna;
