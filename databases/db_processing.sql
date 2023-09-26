@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS Comuna (
 
 
 CREATE TABLE IF NOT EXISTS Dimension (
-    ID int PRIMARY KEY,
+    ID serial PRIMARY KEY,
     nombre VARCHAR(255),
     valor INT,
     comuna_id int NOT NULL,
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS Dimension (
 
 
 CREATE TABLE IF NOT EXISTS Indicador (
-    ID int PRIMARY KEY,
+    ID serial PRIMARY KEY,
     nombre VARCHAR(255),
     prioridad VARCHAR(255),
     fuente VARCHAR(255),

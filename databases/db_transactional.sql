@@ -13,13 +13,13 @@ CREATE DATABASE db_transactional
 CREATE EXTENSION postgis;
 
 CREATE TABLE IF NOT EXISTS Region (
-    CUT INT PRIMARY KEY,
+    CUT serial PRIMARY KEY,
     nombre VARCHAR(255),
     geometria GEOMETRY(MultiPolygon, 4326)
 );
 
 CREATE TABLE IF NOT EXISTS Comuna (
-    CUT INT PRIMARY KEY,
+    CUT serial PRIMARY KEY,
     nombre VARCHAR(255),
     poblacion INT,
     geometria GEOMETRY(MultiPolygon, 4326),
@@ -30,11 +30,10 @@ CREATE TABLE IF NOT EXISTS Comuna (
 
 
 CREATE TABLE IF NOT EXISTS DataEnBruto (
-    ID INT PRIMARY KEY,
+    ID serial PRIMARY KEY,
     valor INT,
     nombre VARCHAR(255),
     fuente VARCHAR(255),
-    dimension VARCHAR(255),
     comuna_id INT NOT NULL,
     FOREIGN KEY (comuna_id) REFERENCES Comuna(CUT) ON DELETE CASCADE
 
