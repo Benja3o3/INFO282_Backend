@@ -4,11 +4,13 @@ from sqlalchemy.sql import text
 class ETL:
     def __init__(self, db, localidades):
         self.fuente = "JUNAEB: IVE"
+        self.nombre = "IVE"        
+        self.valor = 0
+
         self.extractedData = None
         self.db = db
         self.localidades = localidades
         
-        self.valor = 0
 
     def __string__(self):
         return str(self.nombre)
@@ -37,8 +39,8 @@ class ETL:
         query = text("INSERT INTO dataenbruto (valor, nombre, fuente, comuna_id) VALUES (:valor, :nombre, :fuente, :comuna_id)")
         values = {
             'valor': self.valor,
-            'nombre': 'IVE',
-            'fuente': 'JUNAEB IVE',
+            'nombre': self.nombre,
+            'fuente': self.fuente,
             'comuna_id': comuna['CUT']
         }
         with self.db.connect() as con:
