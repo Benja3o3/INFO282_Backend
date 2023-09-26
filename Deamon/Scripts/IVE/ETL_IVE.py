@@ -6,6 +6,7 @@ class ETL:
         self.fuente = "JUNAEB: IVE"
         self.nombre = "IVE"        
         self.valor = 0
+        self.PATH = "Source/IVE/IVE-2023.xlsx"
 
         self.extractedData = None
         self.db = db
@@ -16,9 +17,8 @@ class ETL:
         return str(self.nombre)
 
     def Extract(self):
-        # Extrae los datos y deja DF limpio
-        PATH = "Source/IVE/IVE-2023.xlsx"
-        self.extractedData = pd.read_excel(PATH, sheet_name="COMUNA", header=3)
+
+        self.extractedData = pd.read_excel(self.PATH, sheet_name="COMUNA", header=3)
         self.extractedData = self.extractedData[
             ["ID_COMUNA_ESTABLE", self.extractedData.columns[-1]]
         ]
@@ -34,7 +34,6 @@ class ETL:
             self.valor = 0
         self.valor = df.iloc[-1, -1]
         
-
     def Load(self, comuna):
         query = text("INSERT INTO dataenbruto (valor, nombre, fuente, comuna_id) VALUES (:valor, :nombre, :fuente, :comuna_id)")
         values = {
