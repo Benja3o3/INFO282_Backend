@@ -21,9 +21,10 @@ services:
     ports: 
       - "3310:5432"
     volumes:
+      - ./databases/jsonFiles/:/docker-entrypoint-initdb.d/jsonFiles/
       - ./databases/db_processing.sql:/docker-entrypoint-initdb.d/db_processing.sql
       - ./databases/db_transactional.sql:/docker-entrypoint-initdb.d/db_transactional.sql
-
+      
   pgadmin:
     image: dpage/pgadmin4
     environment: 

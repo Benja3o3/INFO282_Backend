@@ -15,15 +15,15 @@ CREATE EXTENSION postgis;
 CREATE TABLE IF NOT EXISTS Region (
     CUT INT PRIMARY KEY,
     nombre VARCHAR(255),
-    geometria GEOMETRY(Point, 4326)
+    geometria GEOMETRY(MultiPolygon, 4326)
 );
 
 CREATE TABLE IF NOT EXISTS Comuna (
     CUT INT PRIMARY KEY,
     nombre VARCHAR(255),
     poblacion INT,
-    geometria GEOMETRY(Point, 4326),
-    region_id INT NOT NULL,
+    geometria GEOMETRY(MultiPolygon, 4326),
+    region_id INT,
     FOREIGN KEY (region_id) REFERENCES Region(CUT) ON DELETE CASCADE
 
 );
@@ -39,3 +39,24 @@ CREATE TABLE IF NOT EXISTS DataEnBruto (
     FOREIGN KEY (comuna_id) REFERENCES Comuna(CUT) ON DELETE CASCADE
 
 );
+
+CREATE TABLE tempRegion (data jsonb);
+COPY tempRegion (data) FROM '/docker-entrypoint-initdb.d/jsonFiles/regionesDB.json';
+
+INSERT INTO Region
+SELECT (data->>'CUT')::INT, (data ->> 'nombre'), 
+ST_SetSRID(ST_Multi(ST_GeomFromGeoJSON(data->>'geometria')), 4326)
+FROM tempRegion;
+
+
+
+
+CREATE TABLE tempComuna (data jsonb);
+COPY tempComuna (data) FROM '/docker-entrypoint-initdb.d/jsonFiles/regionesDB.json';
+
+INSERT INTO Comuna
+SELECT (data->>'CUT')::INT, (data ->> 'nombre')::VARCHAR(255), 
+        (data->>'poblacion')::INT, 
+        ST_SetSRID(ST_Multi(ST_GeomFromGeoJSON(data->>'geometria')), 4326)::GEOMETRY,
+        (data ->> 'region_id')::INT
+FROM tempComuna;
