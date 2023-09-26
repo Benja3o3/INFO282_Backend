@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS Comuna (
 CREATE TABLE IF NOT EXISTS Dimension (
     ID serial PRIMARY KEY,
     nombre VARCHAR(255),
-    valor INT,
+    valor FLOAT,
     comuna_id int NOT NULL,
     FOREIGN KEY (comuna_id) REFERENCES Comuna(CUT) ON DELETE CASCADE
 
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS Indicador (
     nombre VARCHAR(255),
     prioridad VARCHAR(255),
     fuente VARCHAR(255),
-    valor INT,
+    valor FLOAT,
     dimension_id INT NOT NULL,
     FOREIGN KEY (dimension_id) REFERENCES Dimension(ID) ON DELETE CASCADE
 

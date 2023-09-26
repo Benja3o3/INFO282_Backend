@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS Comuna (
 
 CREATE TABLE IF NOT EXISTS DataEnBruto (
     ID serial PRIMARY KEY,
-    valor INT,
+    valor FLOAT,
     nombre VARCHAR(255),
     fuente VARCHAR(255),
     comuna_id INT NOT NULL,
