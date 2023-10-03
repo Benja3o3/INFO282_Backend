@@ -5,6 +5,7 @@ services:
       context: ./app/
       dockerfile: Dockerfile
       target: base
+    restart: always
     volumes:
       - ./app/src:/home/node/app/src
     container_name: api

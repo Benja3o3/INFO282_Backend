@@ -34,30 +34,54 @@ CREATE TABLE IF NOT EXISTS DataEnBruto (
     valor FLOAT,
     nombre VARCHAR(255),
     fuente VARCHAR(255),
+    fecha DATE,
     comuna_id INT NOT NULL,
     FOREIGN KEY (comuna_id) REFERENCES Comuna(CUT) ON DELETE CASCADE
-
 );
 
 CREATE TABLE tempRegion (data jsonb);
 COPY tempRegion (data) FROM '/docker-entrypoint-initdb.d/jsonFiles/regionesDB.json';
 
-INSERT INTO Region
-SELECT (data->>'CUT')::INT, 
-(data ->> 'nombre')::VARCHAR(255) as nombre, 
-ST_SetSRID(ST_Multi(ST_GeomFromGeoJSON(data->>'geometria')), 4326)
-FROM tempRegion;
+-- INSERT INTO Region
+-- SELECT (data->>'CUT')::INT, 
+-- (data ->> 'nombre')::VARCHAR(255) as nombre, 
+-- ST_SetSRID(ST_Multi(ST_GeomFromGeoJSON(data->>'geometria')), 4326)
+-- FROM tempRegion;
 
-
-
+INSERT INTO Region (CUT, nombre, geometria)
+SELECT DISTINCT (data->>'CUT')::INT,
+    (data->>'nombre')::VARCHAR(255) as nombre,
+    ST_SetSRID(ST_Multi(ST_GeomFromGeoJSON(data->>'geometria')), 4326) as geometria
+FROM tempRegion
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM Region r
+    WHERE r.CUT = (data->>'CUT')::INT
+);
+DROP TABLE IF EXISTS tempRegion;
 
 CREATE TABLE tempComuna (data jsonb);
 COPY tempComuna (data) FROM '/docker-entrypoint-initdb.d/jsonFiles/comunasDB.json';
 
-INSERT INTO Comuna
-SELECT (data->>'CUT')::INT, 
-        (data ->> 'nombre')::VARCHAR(255) as nombre, 
-        (data->> 'poblacion')::INT, 
-        ST_SetSRID(ST_Multi(ST_GeomFromGeoJSON(data->>'geometria')), 4326)::GEOMETRY,
-        (data ->> 'region_id')::INT
-FROM tempComuna;
+-- INSERT INTO Comuna
+-- SELECT (data->>'CUT')::INT, 
+--         (data ->> 'nombre')::VARCHAR(255) as nombre, 
+--         (data->> 'poblacion')::INT, 
+--         ST_SetSRID(ST_Multi(ST_GeomFromGeoJSON(data->>'geometria')), 4326)::GEOMETRY,
+--         (data ->> 'region_id')::INT
+-- FROM tempComuna;
+
+INSERT INTO Comuna (CUT, nombre, poblacion, geometria, region_id)
+SELECT DISTINCT (data->>'CUT')::INT,
+    (data->>'nombre')::VARCHAR(255) as nombre,
+    (data->>'poblacion')::INT as poblacion,
+    ST_SetSRID(ST_Multi(ST_GeomFromGeoJSON(data->>'geometria')), 4326)::GEOMETRY as geometria,
+    (data->>'region_id')::INT as region_id
+FROM tempComuna
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM Comuna c
+    WHERE c.CUT = (data->>'CUT')::INT
+);
+DROP TABLE IF EXISTS tempComuna;
+

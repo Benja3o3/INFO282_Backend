@@ -6,14 +6,11 @@ import psycopg2
 from localidades import Localidades
 from sqlalchemy import create_engine
 
-# from ..Deamon.Scripts.IVE.ETL_IVE import ETL_Trans
-
-
 class database:
-    def __init__(self):
+    def __init__(self, database):
         self.conn = None
         self.host = "localhost"
-        self.database = "db_transactional"
+        self.database = database
 
         self.port = "3310"
         self.user = "root"
@@ -41,20 +38,35 @@ class database:
             engine = create_engine(db_uri)
             return engine
 
+#db transactional
+dbTransaccional = database("db_transactional")
+dbEngineTransaccional = dbTransaccional.create_sqlalchemy_engine()
+localidadesTransaccional = Localidades(dbEngineTransaccional)
 
-db = database()
-dbEngine = db.create_sqlalchemy_engine()
-localidades = Localidades(dbEngine)
+#db processing
+
+dbProcessing = database("db_processing")
+dbEngineProcessing = dbProcessing.create_sqlalchemy_engine()
+localidadesProcessing = Localidades(dbEngineProcessing)
+
 
 ruta_actual = os.path.dirname(__file__)
-archivos_py = glob.glob(os.path.join(ruta_actual, "Scripts/**/*.py"), recursive=True)
+archivos_py = glob.glob(os.path.join(ruta_actual, "Scripts/*.py"), recursive=True)
 
 etls = []  # -> Clases
+etlsProcessing = []  # -> Clases
 
 for archivo_py in archivos_py:
     nombre_modulo = os.path.splitext(os.path.basename(archivo_py))[0]
     loader = importlib.machinery.SourceFileLoader(nombre_modulo, archivo_py)
     module = loader.load_module()
-    etl = module.ETL(dbEngine, localidades)
+    etl = module.ETL(dbEngineTransaccional, localidadesTransaccional)
     etl.ETLProcess()
     etls.append(etls)
+    try:
+        etlProcesing = module.ETL_Processing(dbEngineTransaccional, dbEngineProcessing, localidadesTransaccional)
+        etlProcesing.ETLProcess()
+        etlsProcessing.append(etlProcesing)
+    except:
+         print("No existe ETL PROCESSING")
+        
