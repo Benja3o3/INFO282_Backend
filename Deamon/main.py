@@ -9,6 +9,8 @@ import psycopg2
 from localidades import Localidades
 from sqlalchemy import create_engine
 
+
+
 class database:
     def __init__(self, database):
         #load_dotenv()
@@ -69,20 +71,27 @@ etlsProcessing = []  # -> Clases
 for archivo_py in archivos_py:
     nombre_modulo = os.path.splitext(os.path.basename(archivo_py))[0]
     utils_dir = os.path.dirname(os.path.abspath(__file__))
-    utils_dir = os.path.join(utils_dir, './Scripts')
+    utils_dir = os.path.join(utils_dir, './')
 
     # Agrega la ruta al sys.path
     sys.path.append(utils_dir)
 
     loader = importlib.machinery.SourceFileLoader(nombre_modulo, archivo_py)
     module = loader.load_module()
-    try:
-        etl = module.ETL(dbEngineTransaccional, localidadesTransaccional)
-        etl.ETLProcess()
-        etls.append(etls)
+
+
+    # try:
+    etl = module.ETL(dbEngineTransaccional, localidadesTransaccional)
+    result = etl.ETLProcess()
+    etls.append(etls)
+
+    if(result == False):    
         etlProcesing = module.ETL_Processing(dbEngineTransaccional, dbEngineProcessing, localidadesTransaccional)
         etlProcesing.ETLProcess()
         etlsProcessing.append(etlProcesing)
-    except:
-         print("No existe ETL")
+    else:
+        print("Datos ya actualizados")
+
+    # except:
+    #      print("No existe ETL")
         

@@ -2,6 +2,9 @@ from datetime import datetime
 from sqlalchemy.sql import text
 import os
 import platform
+import glob
+
+import pandas as pd
 
 
 def getDimension(db, dimension, cut):
@@ -24,4 +27,13 @@ def getDateFile(file_path):
     date = datetime.fromtimestamp(creation_time).date()
     return date
 
-## OBTENER NOMBRE DEL ULTIMO ARCHIVO SUBIDO --FALTA
+def getLastFile(folderPath):
+    carpeta = folderPath 
+    archivos = glob.glob(os.path.join(carpeta, '*'))
+    archivos.sort(key=os.path.getctime, reverse=True)
+    if archivos:
+        ultimo_archivo = archivos[0]
+        return ultimo_archivo
+    else:
+        print("La carpeta está vacía.")
+

@@ -4,6 +4,7 @@ from datetime import datetime
 from sqlalchemy.sql import text
 from utils import getDimension 
 from utils import getDateFile
+from utils import getLastFile
 
 class ETL:
     def __init__(self, db, localidades):
@@ -11,13 +12,13 @@ class ETL:
         self.nombre = "IVE"        
         self.valor = 0
 
-        self.PATH = "Source/IVE/IVE-2023.xlsx"      
+        self.FOLDER = ".\Source\IVE"   
+        self.PATH = getLastFile(self.FOLDER)
         self.uploadDate = getDateFile(self.PATH)        
 
         self.extractedData = None
         self.db = db
         self.localidades = localidades
-        
 
     def __string__(self):
         return str(self.nombre)
@@ -71,8 +72,8 @@ class ETL:
                 print(error)
         else:
             print("Archivo ya actualizado")
-    
-        return {"OK": 200, "mesagge": "Indicators is updated successfully"}
+            return True     #Si estaban procesados
+        return False        #No estaban procesados
 
 
 class ETL_Processing:
@@ -83,7 +84,6 @@ class ETL_Processing:
         self.dimension = "Educacional"   
         self.prioridad = 1  
         self.valor = 0
-
 
         #Constructor
         self.dbTransaccional = dbTransaccional
@@ -146,6 +146,7 @@ class ETL_Processing:
                 self.Load(comuna)
         except Exception:
             traceback.print_exc()
+    
         return {"OK": 200, "mesagge": "Indicators is updated successfully"}
 
 
