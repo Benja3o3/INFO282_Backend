@@ -83,5 +83,6 @@ WHERE NOT EXISTS (
     FROM Comuna c
     WHERE c.CUT = (data->>'CUT')::INT
 );
+
 DROP TABLE IF EXISTS tempComuna;
 

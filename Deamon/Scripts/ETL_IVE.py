@@ -1,7 +1,9 @@
 import pandas as pd
-from sqlalchemy.sql import text
 import traceback
 from datetime import datetime
+from sqlalchemy.sql import text
+from utils import getDimension 
+from utils import getDateFile
 
 class ETL:
     def __init__(self, db, localidades):
@@ -9,9 +11,8 @@ class ETL:
         self.nombre = "IVE"        
         self.valor = 0
 
-
-        
-        self.PATH = "Source/IVE/IVE-2023.xlsx"
+        self.PATH = "Source/IVE/IVE-2023.xlsx"      
+        self.uploadDate = getDateFile(self.PATH)        
 
         self.extractedData = None
         self.db = db
@@ -44,7 +45,7 @@ class ETL:
             'valor': float(self.valor),
             'nombre': self.nombre,
             'fuente': self.fuente,
-            'fecha': datetime.now().date(),
+            'fecha': self.uploadDate,
             'comuna_id': comuna['CUT']
         }
         with self.db.connect() as con:
@@ -52,15 +53,25 @@ class ETL:
             con.commit()  
 
     def ETLProcess(self):
-        try:
-            self.Extract()
-            comunas = self.localidades.getComunas()
-            for _, comuna in comunas.iterrows():
-                self.Tranform(comuna)
-                self.Load(comuna)
-        except KeyError as error:
-            print(error)
-
+        query = text("SELECT MAX(fecha) FROM dataenbruto WHERE fuente = :fuente")
+        query = query.bindparams(fuente=self.fuente)
+        result = []
+        with self.db.connect() as con:
+            result = con.execute(query)
+            rows = result.fetchall()
+        result = rows[0][0]
+        if(result == None or self.uploadDate > result):
+            try:
+                self.Extract()
+                comunas = self.localidades.getComunas()
+                for _, comuna in comunas.iterrows():
+                    self.Tranform(comuna)
+                    self.Load(comuna)
+            except KeyError as error:
+                print(error)
+        else:
+            print("Archivo ya actualizado")
+    
         return {"OK": 200, "mesagge": "Indicators is updated successfully"}
 
 
@@ -68,9 +79,11 @@ class ETL_Processing:
     def __init__(self, dbTransaccional, dbProcessing, localidades):
         #Constructor
         self.fuente = "JUNAEB: IVE"
-        self.nombreIndicador = "IVE"        
+        self.nombreIndicador = "IVE"  
+        self.dimension = "Educacional"   
+        self.prioridad = 1  
         self.valor = 0
-    
+
 
         #Constructor
         self.dbTransaccional = dbTransaccional
@@ -101,6 +114,7 @@ class ETL_Processing:
         self.transaccionalData = self.transaccionalData[self.transaccionalData['fecha'] == max_date]
         return 
 
+
     def Tranform(self, comuna):
         # Calculo indicador IVE
         df = self.transaccionalData[self.transaccionalData['comuna_id'] == comuna['CUT']]
@@ -112,12 +126,12 @@ class ETL_Processing:
     def Load(self, comuna):
         query = text("INSERT INTO indicador (nombre, prioridad, fuente, valor, fecha, dimension_id) VALUES (:nombre, :prioridad, :fuente, :valor, :fecha ,:dimension_id)")
         values = {
-            'nombre': self.nombre,
+            'nombre': self.nombreIndicador,
             'prioridad': self.prioridad,
             'fuente': self.fuente,
             'valor': float(self.valor),
             'fecha': datetime.now().date(),
-            'comuna_id': comuna['CUT']
+            'dimension_id': getDimension(self.dbProcessing, self.dimension, comuna["CUT"])
         }
         with self.dbProcessing.connect() as con:
             con.execute(query, values)
@@ -129,7 +143,7 @@ class ETL_Processing:
             comunas = self.localidades.getComunas()
             for _, comuna in comunas.iterrows():
                 self.Tranform(comuna)
-            #     self.Load(comuna)
+                self.Load(comuna)
         except Exception:
             traceback.print_exc()
         return {"OK": 200, "mesagge": "Indicators is updated successfully"}
