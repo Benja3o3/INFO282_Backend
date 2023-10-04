@@ -63,11 +63,6 @@ localidadesProcessing = Localidades(dbEngineProcessing)
 ruta_actual = os.path.dirname(__file__)
 archivos_py = glob.glob(os.path.join(ruta_actual, "Scripts/*.py"), recursive=True)
 
-
-#Primera ejecucion
-etls = []  # -> Clases
-etlsProcessing = []  # -> Clases
-
 for archivo_py in archivos_py:
     nombre_modulo = os.path.splitext(os.path.basename(archivo_py))[0]
     utils_dir = os.path.dirname(os.path.abspath(__file__))
@@ -78,20 +73,15 @@ for archivo_py in archivos_py:
 
     loader = importlib.machinery.SourceFileLoader(nombre_modulo, archivo_py)
     module = loader.load_module()
+    try:
+        etl = module.ETL(dbEngineTransaccional, localidadesTransaccional)
+        result = etl.ETLProcess()
 
-
-    # try:
-    etl = module.ETL(dbEngineTransaccional, localidadesTransaccional)
-    result = etl.ETLProcess()
-    etls.append(etls)
-
-    if(result == False):    
-        etlProcesing = module.ETL_Processing(dbEngineTransaccional, dbEngineProcessing, localidadesTransaccional)
-        etlProcesing.ETLProcess()
-        etlsProcessing.append(etlProcesing)
-    else:
-        print("Datos ya actualizados")
-
-    # except:
-    #      print("No existe ETL")
+        if(result == False):    
+            etlProcesing = module.ETL_Processing(dbEngineTransaccional, dbEngineProcessing, localidadesTransaccional)
+            etlProcesing.ETLProcess()
+        else:
+            print("Datos ya actualizados")
+    except:
+        print("No existe ETL")
         
