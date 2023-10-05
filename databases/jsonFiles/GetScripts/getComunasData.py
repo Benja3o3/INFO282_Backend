@@ -9,11 +9,13 @@ with open('./files/communes.json', 'r', encoding='utf-8') as json_file:
 
 data = data['features']
 fixedJsonData = []
+
+st_area_sh_values = []
+
 for feature in data:
     properties = feature.get('properties', {})  
     geometry = feature.get('geometry', {})      
     properties['coordinates'] = geometry
-
     
     fixedJsonData.append(properties)
 
@@ -23,7 +25,7 @@ for feature in data:
 # Fuente -> COVID 19 MINSAL
 #https://github.com/MinCiencia/Datos-COVID19
 df = pd.DataFrame(fixedJsonData)
-df = df[['cod_comuna', 'Comuna', 'coordinates', 'codregion']]
+df = df[['cod_comuna', 'Comuna', 'coordinates', 'codregion', 'st_area_sh']]
 
 poblacionDF= pd.read_csv('./files/Covid-19.csv')
 poblacionDF= poblacionDF[['Codigo comuna', 'Poblacion']]
@@ -40,11 +42,12 @@ nombresModelo = {
     'Comuna': 'nombre',
     'Poblacion': 'poblacion',
     'coordinates': 'geometria',
-    'codregion': 'region_id'
+    'codregion': 'region_id',
+    'st_area_sh': 'area'
 }
 
 resultadoDF.rename(columns=nombresModelo, inplace=True)
-print(resultadoDF['poblacion'])
+print(resultadoDF)
 #Solucion errores
 
 

@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS Comuna (
     CUT serial PRIMARY KEY,
     nombre VARCHAR(255),
     poblacion INT,
+    area FLOAT,
     geometria GEOMETRY(MultiPolygon, 4326),
     region_id INT,
     FOREIGN KEY (region_id) REFERENCES Region(CUT) ON DELETE CASCADE
@@ -71,10 +72,11 @@ COPY tempComuna (data) FROM '/docker-entrypoint-initdb.d/jsonFiles/comunasDB.jso
 --         (data ->> 'region_id')::INT
 -- FROM tempComuna;
 
-INSERT INTO Comuna (CUT, nombre, poblacion, geometria, region_id)
+INSERT INTO Comuna (CUT, nombre, poblacion, area, geometria, region_id)
 SELECT DISTINCT (data->>'CUT')::INT,
     (data->>'nombre')::VARCHAR(255) as nombre,
     (data->>'poblacion')::INT as poblacion,
+    (data->>'area')::FLOAT as area,
     ST_SetSRID(ST_Multi(ST_GeomFromGeoJSON(data->>'geometria')), 4326)::GEOMETRY as geometria,
     (data->>'region_id')::INT as region_id
 FROM tempComuna

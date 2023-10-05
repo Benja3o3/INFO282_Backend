@@ -2,3 +2,4 @@ psycopg2-binary
 pandas==2.1.1
 SQLAlchemy
 openpyxl
+shapely==1.5.8

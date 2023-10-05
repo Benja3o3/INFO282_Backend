@@ -27,7 +27,7 @@ def getDateFile(file_path):
     return date
 
 def getLastFile(folderPath):
-    archivos = glob.glob(os.path.join("./Source/IVE/", '*'))
+    archivos = glob.glob(os.path.join(folderPath, '*'))
     archivos.sort(key=os.path.getmtime, reverse=True)
     if archivos:
         ultimo_archivo = archivos[0]

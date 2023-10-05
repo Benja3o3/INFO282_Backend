@@ -8,6 +8,13 @@ services:
     restart: always
     volumes:
       - ./app/src:/home/node/app/src
+    environment:
+      - HOST=databases
+      - PORT=5432
+      - USER=root
+      - PASSWORD=root
+      - PROCESSINGDB=db_processing
+      - TRANSACTIONALDB=db_transactional
     container_name: api
     expose:
       - '5002'
@@ -19,6 +26,11 @@ services:
     build: ./databases/
     container_name: databases
     restart: always
+    environment:
+      - DATABASE_HOST=127.0.0.1
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+     
     ports: 
       - "3310:5432"
     volumes:
@@ -44,4 +56,7 @@ services:
       - ./daemon:/daemon 
     environment:
       - HOST=databases
+      - PORT=5432
+      - USER=root
+      - PASSWORD=root
     command: ["crond", "-l", "2", "-f"]

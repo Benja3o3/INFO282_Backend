@@ -17,19 +17,10 @@ class database:
         #load_dotenv()
         self.conn = None
         self.database = database
-
-        # self.host = os.getenv('HOST_DAEMON')
-        # self.port = os.getenv('PORT_DAEMON')
-        # self.user = os.getenv('USER_DAEMON')
-        # self.password = os.getenv('PASSWORD_DAEMON')
-        self.host = "databases"
-        self.port = "5432"
-        self.user = "root"
-        self.password = "root"
-
-        # self.user = "postgres"
-        # self.password = "benja123"
-        # self.port = "5432"
+        self.host = os.environ.get('HOST')
+        self.port = os.environ.get('PORT')
+        self.user = os.environ.get('USER')
+        self.password = os.environ.get('PASSWORD')
         self.conection()
 
     def conection(self):
@@ -97,3 +88,4 @@ for archivo_py in archivos_py:
         
 # Calculo dimensiones
 calculoDimensiones = Dimensiones(dbEngineProcessing)
+

@@ -6,23 +6,23 @@ from utils import getDimension
 from utils import getDateFile
 from utils import getLastFile
 
+
 '''
 riesgo de deserción escolar
-de un establecimiento escolar, a través de
-una evaluación
+de un establecimiento escolar, a través de una evaluación
 socioeconómica de sus estudiantes
 '''
-
-
 class ETL_Transactional:
     def __init__(self, db, localidades):
-        self.fuente = "JUNAEB: IVE"
-        self.nombre = "IVE"        
+        self.fuente = "Subtel: Antenas"
+        self.nombre = "Numero de antenas"        
         self.valor = 0
 
-        self.FOLDER = "./Source/IVE"   
+        #FILE
+        self.FOLDER = "Source/Subtel_antenas/"
         self.PATH = getLastFile(self.FOLDER)
         self.uploadDate = getDateFile(self.PATH)        
+        print(self.PATH)
 
         self.extractedData = None
         self.db = db
@@ -32,20 +32,20 @@ class ETL_Transactional:
         return str(self.nombre)
 
     def Extract(self):
-        self.extractedData = pd.read_excel(self.PATH, sheet_name="COMUNA", header=3)
+        self.extractedData = pd.read_csv(self.PATH, delimiter= ";")
         self.extractedData = self.extractedData[
-            ["ID_COMUNA_ESTABLE", self.extractedData.columns[-1]]
+            ["Codigo comuna", "conectividad"]
         ]
         self.extractedData = self.extractedData.dropna()
-        self.extractedData["ID_COMUNA_ESTABLE"] = self.extractedData[
-            "ID_COMUNA_ESTABLE"
+        self.extractedData["Codigo comuna"] = self.extractedData[
+            "Codigo comuna"
         ].astype(int)
 
     def Tranform(self, comuna):
-        # Transforma datos para ser subidos a database
-        df = self.extractedData[self.extractedData['ID_COMUNA_ESTABLE'] == comuna['CUT']]
+        df = self.extractedData[self.extractedData['Codigo comuna'] == comuna['CUT']]
         if(df.empty):
-            self.valor = 0
+            self.valor = 0    
+            return
         self.valor = df.iloc[-1, -1]
         
     def Load(self, comuna):
@@ -80,15 +80,15 @@ class ETL_Transactional:
                 print(error)
         else:
             print("Datos en bruto ya actualizados: ", self.fuente)
-            return True     #Si estaban procesados
+            return False     #Si estaban procesados
         return False        #No estaban procesados
 
 
 class ETL_Processing:
     def __init__(self, dbTransaccional, dbProcessing, localidades):
         #Constructor
-        self.fuente = "JUNAEB: IVE"
-        self.nombreIndicador = "IVE"  
+        self.fuente = "Subtel: Antenas"
+        self.nombreIndicador = "Numero de antenas"  
         self.dimension = "Educacional"   
         self.prioridad = 1  
         self.valor = 0
@@ -126,11 +126,13 @@ class ETL_Processing:
     def Tranform(self, comuna):
         # Calculo indicador IVE
         df = self.transaccionalData[self.transaccionalData['comuna_id'] == comuna['CUT']]
+
         if(df.empty):
             self.valor = 0
-        self.valor = df["valor"].tail(1).iloc[0] * 100
+        self.valor = (df["valor"].tail(1).iloc[0]/comuna['Area']) * 100
+        print(self.valor)
         return
-        
+            
     def Load(self, comuna):
         query = text("INSERT INTO indicador (nombre, prioridad, fuente, valor, fecha, dimension_id) VALUES (:nombre, :prioridad, :fuente, :valor, :fecha ,:dimension_id)")
         values = {

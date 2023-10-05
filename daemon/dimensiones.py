@@ -57,9 +57,3 @@ class Dimensiones():
         with self.db.connect() as con:
             con.execute(query, values)
             con.commit()
-
-        
-
-
-# 1- obtengo localidades
-# En  base a las localidad obtengo
