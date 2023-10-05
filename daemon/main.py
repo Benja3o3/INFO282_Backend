@@ -9,7 +9,7 @@ import psycopg2
 
 from localidades import Localidades
 from sqlalchemy import create_engine
-
+from dimensiones import Dimensiones
 
 
 class database:
@@ -95,4 +95,5 @@ for archivo_py in archivos_py:
     except Exception:
         traceback.print_exc()
         
-        
+# Calculo dimensiones
+calculoDimensiones = Dimensiones(dbEngineProcessing)
