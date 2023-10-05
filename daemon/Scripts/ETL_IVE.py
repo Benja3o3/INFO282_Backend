@@ -6,13 +6,13 @@ from utils import getDimension
 from utils import getDateFile
 from utils import getLastFile
 
-class ETL:
+class ETL_Transactional:
     def __init__(self, db, localidades):
         self.fuente = "JUNAEB: IVE"
         self.nombre = "IVE"        
         self.valor = 0
 
-        self.FOLDER = ".\Source\IVE"   
+        self.FOLDER = "./Source/IVE"   
         self.PATH = getLastFile(self.FOLDER)
         self.uploadDate = getDateFile(self.PATH)        
 
@@ -71,7 +71,7 @@ class ETL:
             except KeyError as error:
                 print(error)
         else:
-            print("Archivo ya actualizado")
+            print("Datos en bruto ya actualizados: ", self.fuente)
             return True     #Si estaban procesados
         return False        #No estaban procesados
 

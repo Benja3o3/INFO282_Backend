@@ -36,4 +36,12 @@ services:
     depends_on:
       - databases
 
-
+  cron:
+    build:
+      context: ./daemon/
+      dockerfile: Dockerfile
+    volumes:
+      - ./daemon:/daemon 
+    environment:
+      - HOST=databases
+    command: ["crond", "-l", "2", "-f"]

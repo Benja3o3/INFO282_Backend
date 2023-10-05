@@ -3,6 +3,7 @@ import os
 import importlib
 import importlib.machinery
 import sys
+import traceback
 import psycopg2
 #from dotenv import load_dotenv
 
@@ -21,8 +22,8 @@ class database:
         # self.port = os.getenv('PORT_DAEMON')
         # self.user = os.getenv('USER_DAEMON')
         # self.password = os.getenv('PASSWORD_DAEMON')
-        self.host = "localhost"
-        self.port = "3310"
+        self.host = "databases"
+        self.port = "5432"
         self.user = "root"
         self.password = "root"
 
@@ -47,6 +48,15 @@ class database:
             db_uri = f"postgresql://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}"
             engine = create_engine(db_uri)
             return engine
+
+
+#Cambio de directorio
+directorio_padre = os.path.dirname(os.getcwd())
+nuevo_directorio = os.path.join(os.getcwd(),directorio_padre)
+os.chdir(nuevo_directorio)
+
+daemon_folder = os.path.join(os.getcwd(),"./daemon")
+os.chdir(daemon_folder)
 
 #db transactional
 dbTransaccional = database("db_transactional")
@@ -74,14 +84,15 @@ for archivo_py in archivos_py:
     loader = importlib.machinery.SourceFileLoader(nombre_modulo, archivo_py)
     module = loader.load_module()
     try:
-        etl = module.ETL(dbEngineTransaccional, localidadesTransaccional)
+        etl = module.ETL_Transactional(dbEngineTransaccional, localidadesTransaccional)
         result = etl.ETLProcess()
 
         if(result == False):    
             etlProcesing = module.ETL_Processing(dbEngineTransaccional, dbEngineProcessing, localidadesTransaccional)
             etlProcesing.ETLProcess()
         else:
-            print("Datos ya actualizados")
-    except:
-        print("No existe ETL")
+            print("Datos procesados ya actualizados")
+    except Exception:
+        traceback.print_exc()
+        
         
