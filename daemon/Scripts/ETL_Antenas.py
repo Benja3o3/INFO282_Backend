@@ -6,12 +6,6 @@ from utils import getDimension
 from utils import getDateFile
 from utils import getLastFile
 
-
-'''
-riesgo de deserción escolar
-de un establecimiento escolar, a través de una evaluación
-socioeconómica de sus estudiantes
-'''
 class ETL_Transactional:
     def __init__(self, db, localidades):
         self.fuente = "Subtel: Antenas"
