@@ -9,12 +9,12 @@ from utils import getLastFile
 
 class ETL_Transactional:
     def __init__(self, db, localidades):
-        self.fuente = "Subtel: Antenas"
-        self.nombre = "Numero de antenas"
+        self.fuente = "Comisaria Virtual"
+        self.nombre = "Numero de comisarias"
         self.valor = 0
 
         # FILE
-        self.FOLDER = "Source/Subtel_antenas/"
+        self.FOLDER = "Source/Comisarias/"
         self.PATH = getLastFile(self.FOLDER)
         self.uploadDate = getDateFile(self.PATH)
         print(self.PATH)
@@ -27,15 +27,21 @@ class ETL_Transactional:
         return str(self.nombre)
 
     def Extract(self):
-        self.extractedData = pd.read_csv(self.PATH, delimiter=";")
-        self.extractedData = self.extractedData[["Codigo comuna", "conectividad"]]
-        self.extractedData = self.extractedData.dropna()
-        self.extractedData["Codigo comuna"] = self.extractedData[
-            "Codigo comuna"
-        ].astype(int)
+        self.extractedData = pd.read_csv(self.PATH, delimiter=";", encoding="latin-1")
+        self.extractedData = self.extractedData[["Id_comuna", "Id_comisaria"]]
+        self.extractedData = (
+            self.extractedData.groupby("Id_comuna")["Id_comisaria"]
+            .count()
+            .reset_index()
+        )
+        self.extractedData.rename(
+            columns={"Id_comisaria": "Numero_comisarias"}, inplace=True
+        )
+        self.extractedData["Id_comuna"] = self.extractedData["Id_comuna"].astype(int)
+        print(self.extractedData)
 
     def Tranform(self, comuna):
-        df = self.extractedData[self.extractedData["Codigo comuna"] == comuna["CUT"]]
+        df = self.extractedData[self.extractedData["Id_comuna"] == comuna["CUT"]]
         if df.empty:
             self.valor = 0
             return
@@ -57,6 +63,7 @@ class ETL_Transactional:
             con.commit()
 
     def ETLProcess(self):
+        # self.Extract()
         query = text("SELECT MAX(fecha) FROM dataenbruto WHERE fuente = :fuente")
         query = query.bindparams(fuente=self.fuente)
         result = []
@@ -82,9 +89,9 @@ class ETL_Transactional:
 class ETL_Processing:
     def __init__(self, dbTransaccional, dbProcessing, localidades):
         # Constructor
-        self.fuente = "Subtel: Antenas"
-        self.nombreIndicador = "Numero de antenas"
-        self.dimension = "Tecnologico"
+        self.fuente = "Comisaria Virtual"
+        self.nombreIndicador = "Numero de comisarias"
+        self.dimension = "Seguridad"
         self.prioridad = 1
         self.valor = 0
 
@@ -130,6 +137,7 @@ class ETL_Processing:
         if df.empty:
             self.valor = 0
         self.valor = (df["valor"].tail(1).iloc[0] / comuna["Area"]) * 100
+
         # print(self.valor)
         return
 
