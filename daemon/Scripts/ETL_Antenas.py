@@ -84,7 +84,7 @@ class ETL_Processing:
         # Constructor
         self.fuente = "Subtel: Antenas"
         self.nombreIndicador = "Numero de antenas"
-        self.dimension = "Tecnologico"
+        self.dimension = "Tecnologia"
         self.prioridad = 1
         self.valor = 0
 
