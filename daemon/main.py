@@ -85,6 +85,7 @@ for archivo_py in archivos_py:
             print("Datos procesados ya actualizados")
     except Exception:
         traceback.print_exc()
+    print("--------------------------------------------------------------------------")
         
 # Calculo dimensiones
 calculoDimensiones = Dimensiones(dbEngineProcessing)
