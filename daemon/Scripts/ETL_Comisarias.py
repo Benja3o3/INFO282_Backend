@@ -38,7 +38,6 @@ class ETL_Transactional:
             columns={"Id_comisaria": "Numero_comisarias"}, inplace=True
         )
         self.extractedData["Id_comuna"] = self.extractedData["Id_comuna"].astype(int)
-        print(self.extractedData)
 
     def Tranform(self, comuna):
         df = self.extractedData[self.extractedData["Id_comuna"] == comuna["CUT"]]

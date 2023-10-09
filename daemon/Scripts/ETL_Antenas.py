@@ -129,8 +129,7 @@ class ETL_Processing:
 
         if df.empty:
             self.valor = 0
-        self.valor = (df["valor"].tail(1).iloc[0] / comuna["Area"]) * 100
-        # print(self.valor)
+        self.valor = (df["valor"].tail(1).iloc[0] / comuna["Poblacion"]) * 100
         return
 
     def Load(self, comuna):

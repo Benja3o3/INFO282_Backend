@@ -40,6 +40,7 @@ class ETL_Transactional:
         self.extractedData["Unidad territorial"] = self.extractedData[
             "Unidad territorial"]
 
+        print(self.extractedData)
 
     def Tranform(self, comuna):
         # Transforma datos para ser subidos a database
@@ -129,8 +130,6 @@ class ETL_Processing:
     def Tranform(self, comuna):
         # Calculo indicador IVE
         df = self.transaccionalData[self.transaccionalData['comuna_id'] == comuna['CUT']]
-        # print(df)
-        # print(df["poblacion"])
         if(df.empty):
             self.valor = 0
         self.valor = df["valor"].tail(1).iloc[0] // df["poblacion"]

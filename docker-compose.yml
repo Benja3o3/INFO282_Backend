@@ -1,4 +1,9 @@
 version: "3.8"
+
+    
+networks:
+  filetransfer:
+
 services:
   api:
     build:
@@ -20,6 +25,8 @@ services:
       - '5002'
     ports:
       - '5002:5002'
+    networks:
+      - filetransfer
     command: npm run dev
     
   databases:
@@ -30,7 +37,8 @@ services:
       - DATABASE_HOST=127.0.0.1
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
-     
+    networks:
+      - filetransfer
     ports: 
       - "3310:5432"
     volumes:
@@ -45,13 +53,18 @@ services:
       PGADMIN_DEFAULT_PASSWORD: "admin"
     ports:
       - "3380:80"
+    networks:
+      - filetransfer
     depends_on:
       - databases
 
   cron:
+    container_name: cron
     build:
       context: ./daemon/
       dockerfile: Dockerfile
+    networks:
+      - filetransfer
     volumes:
       - ./daemon:/daemon 
     environment:
@@ -59,4 +72,5 @@ services:
       - PORT=5432
       - USER=root
       - PASSWORD=root
+
     command: ["crond", "-l", "2", "-f"]

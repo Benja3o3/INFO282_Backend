@@ -49,7 +49,6 @@ class ETL_Transactional:
             self.valor = 0
             return
         self.valor = df.iloc[-1, -1]
-        print(self.valor)
         
     def Load(self, comuna):
         query = text("INSERT INTO dataenbruto (valor, nombre, fuente, fecha, comuna_id) VALUES (:valor, :nombre, :fuente, :fecha, :comuna_id)")
