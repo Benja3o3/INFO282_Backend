@@ -37,6 +37,8 @@ class Dimensiones():
             indicadores = result.fetchall()
 
         dim_value = 0
+        
+
         if len(indicadores) != 0:
             for ind in indicadores:
                 dim_value = dim_value + ind[4]

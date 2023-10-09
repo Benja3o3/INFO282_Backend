@@ -131,8 +131,7 @@ class ETL_Processing:
         df = self.transaccionalData[self.transaccionalData['comuna_id'] == comuna['CUT']]
         if(df.empty):
             self.valor = 0
-        self.valor = df["valor"].tail(1).iloc[0] * 100
-        return
+        self.valor = (df["valor"].tail(1).iloc[0] / comuna['Poblacion'] )* 100
         
     def Load(self, comuna):
         query = text("INSERT INTO indicador (nombre, prioridad, fuente, valor, fecha, dimension_id) VALUES (:nombre, :prioridad, :fuente, :valor, :fecha ,:dimension_id)")

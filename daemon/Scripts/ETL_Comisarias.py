@@ -136,10 +136,10 @@ class ETL_Processing:
 
         if df.empty:
             self.valor = 0
-        self.valor = (df["valor"].tail(1).iloc[0] / comuna["Area"]) * 100
-
-        # print(self.valor)
-        return
+        try:
+            self.valor = (df["valor"].tail(1).iloc[0] / comuna["Area"]) * 100
+        except:
+            return
 
     def Load(self, comuna):
         query = text(

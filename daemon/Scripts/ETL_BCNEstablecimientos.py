@@ -49,8 +49,7 @@ class ETL_Transactional:
             self.valor = 0
             return
         self.valor = df.iloc[-1, -1]
-        
-
+        print(self.valor)
         
     def Load(self, comuna):
         query = text("INSERT INTO dataenbruto (valor, nombre, fuente, fecha, comuna_id) VALUES (:valor, :nombre, :fuente, :fecha, :comuna_id)")
@@ -132,7 +131,7 @@ class ETL_Processing:
         df = self.transaccionalData[self.transaccionalData['comuna_id'] == comuna['CUT']]
         if(df.empty):
             self.valor = 0
-        self.valor = df["valor"].tail(1).iloc[0] * 100
+        self.valor = (df["valor"].tail(1).iloc[0] / comuna['Poblacion'])*100
         return
         
     def Load(self, comuna):
