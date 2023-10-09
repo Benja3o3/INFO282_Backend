@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { pool } from "../db/database";
 import {
   getIndicatorsFromAllComunas,
-  getOneIndicatorById,
+  getIndicatorByCUT,
   getAllIndicators,
 } from "../db_querys/indicador.querys";
 
@@ -12,7 +12,7 @@ export async function getIndicadores(req: Request, res: Response) {
 }
 
 export async function getIndicador(req: Request, res: Response) {
-  const indicador = await pool.query(getOneIndicatorById(req.params.id));
+  const indicador = await pool.query(getIndicatorByCUT(req.params.id));
   return res.json(indicador.rows);
 }
 
