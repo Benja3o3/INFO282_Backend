@@ -12,44 +12,27 @@ CREATE DATABASE db_transactional
 
 CREATE EXTENSION postgis;
 
-CREATE TABLE IF NOT EXISTS Region (
-    CUT serial PRIMARY KEY,
+
+-- Crear data pais
+CREATE TABLE IF NOT EXISTS Pais (
+    pais_id serial PRIMARY KEY,
     nombre VARCHAR(255),
     geometria GEOMETRY(MultiPolygon, 4326)
 );
 
-CREATE TABLE IF NOT EXISTS Comuna (
-    CUT serial PRIMARY KEY,
+
+-- Crear data region
+CREATE TABLE IF NOT EXISTS Region (
+    region_id serial PRIMARY KEY,
     nombre VARCHAR(255),
-    poblacion INT,
-    area FLOAT,
-    geometria GEOMETRY(MultiPolygon, 4326),
-    region_id INT,
-    FOREIGN KEY (region_id) REFERENCES Region(CUT) ON DELETE CASCADE
+    geometria GEOMETRY(MultiPolygon, 4326)
 
-);
-
-
-CREATE TABLE IF NOT EXISTS DataEnBruto (
-    ID serial PRIMARY KEY,
-    valor FLOAT,
-    nombre VARCHAR(255),
-    fuente VARCHAR(255),
-    fecha DATE,
-    comuna_id INT NOT NULL,
-    FOREIGN KEY (comuna_id) REFERENCES Comuna(CUT) ON DELETE CASCADE
 );
 
 CREATE TABLE tempRegion (data jsonb);
 COPY tempRegion (data) FROM '/docker-entrypoint-initdb.d/jsonFiles/regionesDB.json';
 
--- INSERT INTO Region
--- SELECT (data->>'CUT')::INT, 
--- (data ->> 'nombre')::VARCHAR(255) as nombre, 
--- ST_SetSRID(ST_Multi(ST_GeomFromGeoJSON(data->>'geometria')), 4326)
--- FROM tempRegion;
-
-INSERT INTO Region (CUT, nombre, geometria)
+INSERT INTO Region (region_id, nombre, geometria)
 SELECT DISTINCT (data->>'CUT')::INT,
     (data->>'nombre')::VARCHAR(255) as nombre,
     ST_SetSRID(ST_Multi(ST_GeomFromGeoJSON(data->>'geometria')), 4326) as geometria
@@ -57,22 +40,26 @@ FROM tempRegion
 WHERE NOT EXISTS (
     SELECT 1
     FROM Region r
-    WHERE r.CUT = (data->>'CUT')::INT
+    WHERE r.region_id = (data->>'region_id')::INT
 );
 DROP TABLE IF EXISTS tempRegion;
+
+--Crear data comuna
+CREATE TABLE IF NOT EXISTS Comuna (
+    comuna_id serial PRIMARY KEY,
+    nombre VARCHAR(255),
+    poblacion INT,
+    area FLOAT,
+    geometria GEOMETRY(MultiPolygon, 4326),
+    region_id INT,
+    FOREIGN KEY (region_id) REFERENCES Region(region_id) ON DELETE CASCADE
+);
+
 
 CREATE TABLE tempComuna (data jsonb);
 COPY tempComuna (data) FROM '/docker-entrypoint-initdb.d/jsonFiles/comunasDB.json';
 
--- INSERT INTO Comuna
--- SELECT (data->>'CUT')::INT, 
---         (data ->> 'nombre')::VARCHAR(255) as nombre, 
---         (data->> 'poblacion')::INT, 
---         ST_SetSRID(ST_Multi(ST_GeomFromGeoJSON(data->>'geometria')), 4326)::GEOMETRY,
---         (data ->> 'region_id')::INT
--- FROM tempComuna;
-
-INSERT INTO Comuna (CUT, nombre, poblacion, area, geometria, region_id)
+INSERT INTO Comuna (comuna_id, nombre, poblacion, area, geometria, region_id)
 SELECT DISTINCT (data->>'CUT')::INT,
     (data->>'nombre')::VARCHAR(255) as nombre,
     (data->>'poblacion')::INT as poblacion,
@@ -83,8 +70,59 @@ FROM tempComuna
 WHERE NOT EXISTS (
     SELECT 1
     FROM Comuna c
-    WHERE c.CUT = (data->>'CUT')::INT
+    WHERE c.comuna_id = (data->>'CUT')::INT
 );
 
 DROP TABLE IF EXISTS tempComuna;
 
+
+--Crear dimensiones
+CREATE TABLE IF NOT EXISTS Dimension (
+    ID serial PRIMARY KEY,
+    nombre VARCHAR(255),
+    comuna_id INT NOT NULL,
+    FOREIGN KEY (comuna_id) REFERENCES Comuna(comuna_id) ON DELETE CASCADE
+);
+
+DO $$
+
+    DECLARE comuna_cursor CURSOR FOR SELECT comuna_id FROM Comuna;
+    DECLARE comuna_id INT;
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM Dimension LIMIT 1) THEN
+        OPEN comuna_cursor;
+        LOOP
+            FETCH comuna_cursor INTO comuna_id;
+            IF comuna_id IS NULL THEN
+                EXIT;
+            END IF;
+
+            INSERT INTO Dimension (nombre, comuna_id)
+            VALUES ('Educacional', comuna_id);
+
+            INSERT INTO Dimension (nombre, comuna_id)
+            VALUES ('Salud', comuna_id);
+
+            INSERT INTO Dimension (nombre, comuna_id)
+            VALUES ('Seguridad', comuna_id);
+
+            INSERT INTO Dimension (nombre, comuna_id)
+            VALUES ('Tecnologia', comuna_id);
+
+            INSERT INTO Dimension (nombre, comuna_id)
+            VALUES ('Economico', comuna_id);
+
+            INSERT INTO Dimension (nombre, comuna_id)
+            VALUES ('Ecologico', comuna_id);
+
+            INSERT INTO Dimension (nombre, comuna_id)
+            VALUES ('Movilidad', comuna_id);
+
+            INSERT INTO Dimension (nombre, comuna_id)
+            VALUES ('Diversion', comuna_id);
+
+        END LOOP;
+        CLOSE comuna_cursor;
+    END IF;
+
+END $$;
