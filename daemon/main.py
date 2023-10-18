@@ -78,15 +78,15 @@ for archivo_py in archivos_py:
         etl = module.ETL_Transactional(dbEngineTransaccional, localidadesTransaccional)
         result = etl.ETLProcess()
 
-        if(result == False):    
-            etlProcesing = module.ETL_Processing(dbEngineTransaccional, dbEngineProcessing, localidadesTransaccional)
-            etlProcesing.ETLProcess()
-        else:
-            print("Datos procesados ya actualizados")
+        # if(result == False):    
+        #     etlProcesing = module.ETL_Processing(dbEngineTransaccional, dbEngineProcessing, localidadesTransaccional)
+        #     etlProcesing.ETLProcess()
+        # else:
+        #     print("Datos procesados ya actualizados")
     except Exception:
         traceback.print_exc()
     print("--------------------------------------------------------------------------")
         
-# Calculo dimensiones
-calculoDimensiones = Dimensiones(dbEngineProcessing)
+# # Calculo dimensiones
+# calculoDimensiones = Dimensiones(dbEngineProcessing)
 
