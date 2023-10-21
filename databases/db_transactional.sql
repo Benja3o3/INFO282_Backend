@@ -77,52 +77,32 @@ DROP TABLE IF EXISTS tempComuna;
 
 
 --Crear dimensiones
-CREATE TABLE IF NOT EXISTS Dimension (
-    ID serial PRIMARY KEY,
-    nombre VARCHAR(255),
-    comuna_id INT NOT NULL,
-    FOREIGN KEY (comuna_id) REFERENCES Comuna(comuna_id) ON DELETE CASCADE
+CREATE TABLE IF NOT EXISTS Dimensiones (
+    dimension_id serial PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL
 );
 
-DO $$
 
-    DECLARE comuna_cursor CURSOR FOR SELECT comuna_id FROM Comuna;
-    DECLARE comuna_id INT;
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM Dimension LIMIT 1) THEN
-        OPEN comuna_cursor;
-        LOOP
-            FETCH comuna_cursor INTO comuna_id;
-            IF comuna_id IS NULL THEN
-                EXIT;
-            END IF;
+INSERT INTO Dimensiones (nombre)
+VALUES ('Educacional'),
+        ('Salud'),
+        ('Seguridad'),
+        ('Tecnologia'),
+        ('Economico'),
+        ('Ecologico'),
+        ('Movilidad'),
+        ('Diversion');
 
-            INSERT INTO Dimension (nombre, comuna_id)
-            VALUES ('Educacional', comuna_id);
+CREATE TABLE IF NOT EXISTS comunas_dimensiones (
+    comuna_id INT,
+    dimension_id INT,
+    PRIMARY KEY (comuna_id, dimension_id),
+    FOREIGN KEY (comuna_id) REFERENCES comuna (comuna_id) ON DELETE CASCADE,
+    FOREIGN KEY (dimension_id) REFERENCES dimensiones (dimension_id) ON DELETE CASCADE
+);
 
-            INSERT INTO Dimension (nombre, comuna_id)
-            VALUES ('Salud', comuna_id);
+INSERT INTO comunas_dimensiones (comuna_id, dimension_id)
+SELECT c.comuna_id, d.dimension_id
+FROM Comuna c
+CROSS JOIN Dimensiones d;
 
-            INSERT INTO Dimension (nombre, comuna_id)
-            VALUES ('Seguridad', comuna_id);
-
-            INSERT INTO Dimension (nombre, comuna_id)
-            VALUES ('Tecnologia', comuna_id);
-
-            INSERT INTO Dimension (nombre, comuna_id)
-            VALUES ('Economico', comuna_id);
-
-            INSERT INTO Dimension (nombre, comuna_id)
-            VALUES ('Ecologico', comuna_id);
-
-            INSERT INTO Dimension (nombre, comuna_id)
-            VALUES ('Movilidad', comuna_id);
-
-            INSERT INTO Dimension (nombre, comuna_id)
-            VALUES ('Diversion', comuna_id);
-
-        END LOOP;
-        CLOSE comuna_cursor;
-    END IF;
-
-END $$;

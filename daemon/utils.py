@@ -8,17 +8,34 @@ import pandas as pd
 
 
 
-def getDimension(db, dimension, cut):
+dimensiones = {
+    "Educacional": 1,
+    "Salud": 2,
+    "Seguridad": 3,
+    "Tecnologia": 4,
+    "Economico": 5,
+    "Ecologico": 6,
+    "Movilidad": 7,
+    "Diversion": 8
+}
+
+def getDimension(db, dimension):
     try:
-        query = text("SELECT * FROM dimension WHERE comuna_id = :comuna_id AND nombre = :nombre")
-        with db.connect() as con:
-            data = {
-                "comuna_id": cut,
-                "nombre": dimension
-            }
-            result = con.execute(query, data)
-            results_list = result.fetchall()
-        return results_list[0][0]
+        return dimensiones[dimension]
+        # query = text(f"""
+        #         SELECT * FROM dimensiones
+        #         WHERE nombre = :dimension
+        #         """)
+        
+        # with db.connect() as con:
+        #     data = {
+        #         "nombre": dimensiones[dimension]
+        #     }
+        #     result = con.execute(query, data)
+        #     results_list = result.fetchall()
+        #     print(results_list)
+        # return results_list[0][0]
+
     except:
         return
 

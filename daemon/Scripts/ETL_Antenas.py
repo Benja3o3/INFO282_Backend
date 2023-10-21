@@ -39,24 +39,27 @@ class ETL_Transactional:
     
     def Load(self, data):
         self.updateFlag()
+
         with self.db.connect() as conn:
             try:
                 data = {
                     "nombre": self.nombreData,
-                    "comuna_id" : int(data["Codigo comuna"].iloc[0]),
                     "conectividad": int(data["conectividad"].iloc[0]),
                     "fecha" : self.uploadDate,
                     "flag" : True,
-                    "dimension": getDimension(self.db, self.dimension, int(data["Codigo comuna"].iloc[0]))
+                    "comuna_id": int(data["Codigo comuna"].iloc[0]),
+                    "dimension_id": getDimension(self.db, self.dimension)
+                                     
                 }
                 query = text(
                     f"""
-                    INSERT INTO {self.TABLENAME} (nombre, comuna_id, conectividad, fecha, flag, dimension)
-                    VALUES (:nombre, :comuna_id, :conectividad, :fecha, :flag, :dimension)
+                    INSERT INTO {self.TABLENAME} (nombre, conectividad, fecha, flag, comuna_id, dimension_id)
+                    VALUES (:nombre, :conectividad, :fecha, :flag, :comuna_id, :dimension_id)
                     """
                 )
                 conn.execute(query, data)
                 conn.commit()
+                
             except:
                 print("Datos no encontrados")
 
@@ -85,13 +88,13 @@ class ETL_Transactional:
         with self.db.connect() as con:     
             createTableQuery = text(
                 f"CREATE TABLE IF NOT EXISTS {self.TABLENAME} ("
-                " id serial PRIMARY KEY,"
+                " data_id serial PRIMARY KEY,"
                 " nombre VARCHAR(255),"
-                " comuna_id INT,"
                 " conectividad INT,"
                 " fecha Date,"
                 " flag Boolean,"
-                " dimension INT"
+                " comuna_id INT,"
+                " dimension_id INT"
                 ")"
             )      
 
@@ -117,7 +120,7 @@ class ETL_Transactional:
         else:
             print("Datos en bruto ya actualizados: ", self.fuente)
             return True  
-        return False 
+        return False
 
 
 class ETL_Processing:

@@ -8,4 +8,3 @@ COPY crontab /var/spool/cron/crontabs/root
 
 RUN pip3 install -r /daemon/requirements.txt
 
-RUN chmod 0655 /daemon/crontest.py
