@@ -73,9 +73,9 @@ class ETL_Transactional:
                 query = text(
                     f"""
                     UPDATE {self.TABLENAME}
-                    SET flag = False
+                    SET flag = True
                     WHERE nombre = :nombre
-                    AND flag = True
+                    AND flag = False
                     """
                 )
                 conn.execute(query, data)
@@ -119,7 +119,7 @@ class ETL_Transactional:
                 print(error)
         else:
             print("Datos en bruto ya actualizados: ", self.fuente)
-            return True  
+            return False  
         return False
 
 
@@ -175,7 +175,7 @@ class ETL_Processing:
         df = self.transaccionalData
         df_merged = df.merge(comuna, left_on='comuna_id', right_on='comuna_id', how='inner')
         df_merged['valor'] = df_merged['conectividad'] / df_merged['Poblacion']
-        data = df_merged[['comuna_id', 'valor', 'dimension']]
+        data = df_merged[['comuna_id', 'valor', 'dimension_id']]
         min_value = df_merged['valor'].min()
         max_value = df_merged['valor'].max()
         data.loc[:, 'valor'] = (data['valor'] - min_value) / (max_value - min_value)
@@ -217,9 +217,9 @@ class ETL_Processing:
                 query = text(
                     f"""
                     UPDATE {self.INDICADORTABLE}
-                    SET flag = False
+                    SET flag = True
                     WHERE indicador = :indicador_id
-                    AND flag = True
+                    AND flag = False
                     """
                 )
                 conn.execute(query, data)
