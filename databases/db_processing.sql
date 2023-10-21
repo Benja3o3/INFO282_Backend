@@ -28,15 +28,12 @@ CREATE TABLE IF NOT EXISTS Dimension (
     FOREIGN KEY (comuna_id) REFERENCES Comuna(comuna_id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS Indicador (
-    ID serial PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS Indicadores (
+    ID VARCHAR(255) PRIMARY KEY,
     nombre VARCHAR(255),
-    valor FLOAT,
-    prioridad VARCHAR(255),
-    fecha DATE,  -- Fecha de subida del archivo
-    flag BOOLEAN,
-    comuna_id INT,              -- Permite busqueda en dimensiones
-    dimension VARCHAR(255)    -- Permite busqueda en dimensiones
+    prioridad INT,
+    dimension VARCHAR(255),
+    fuente VARCHAR(255)
 );
 
 
