@@ -72,5 +72,9 @@ services:
       - PORT=5432
       - USER=root
       - PASSWORD=root
+    ports:
+      - "2222:22"
+      - "2221:21"
 
-    command: ["crond", "-l", "2", "-f"]
+    stdin_open: true
+    tty: true

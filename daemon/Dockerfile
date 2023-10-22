@@ -1,10 +1,8 @@
-FROM alpine:latest
-RUN apk add --update py3-pip
+FROM ubuntu:bionic
+RUN apt-get update && apt-get install -y vsftpd
 
-WORKDIR /daemon/
-COPY . /daemon/
-COPY crontab /var/spool/cron/crontabs/root
+COPY vsftpd.conf /etc/vsftpd/vsftpd.conf
 
+EXPOSE 20 21
 
-RUN pip3 install -r /daemon/requirements.txt
-
+CMD ["/usr/sbin/vsftpd"]

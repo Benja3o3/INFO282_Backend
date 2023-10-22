@@ -22,20 +22,6 @@ dimensiones = {
 def getDimension(db, dimension):
     try:
         return dimensiones[dimension]
-        # query = text(f"""
-        #         SELECT * FROM dimensiones
-        #         WHERE nombre = :dimension
-        #         """)
-        
-        # with db.connect() as con:
-        #     data = {
-        #         "nombre": dimensiones[dimension]
-        #     }
-        #     result = con.execute(query, data)
-        #     results_list = result.fetchall()
-        #     print(results_list)
-        # return results_list[0][0]
-
     except:
         return
 
