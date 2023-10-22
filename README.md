@@ -35,3 +35,13 @@ Para vincular la base de datos en PGADMIN se debe hacer click derecho en servido
     Port: **5542** { Puerto de la base de datos }
 ``` 
 
+## Para FTP
+Descargar FILEZILLA y hacer coneccion rapida a localhost con los
+siguientes datos
+
+``` 
+    Servidor:       localhost
+    nombreusuario:  alpineftp
+    contraseña:     alpineftp
+    puerto:         21
+``` 

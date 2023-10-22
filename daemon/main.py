@@ -76,17 +76,16 @@ for archivo_py in archivos_py:
     module = loader.load_module()
     try:
         etl = module.ETL_Transactional(dbEngineTransaccional, localidadesTransaccional)
-        result = etl.ETLProcess()
-
-        if(result == False):    
+        isUpdated = etl.ETLProcess()
+        if(isUpdated == False):
             etlProcesing = module.ETL_Processing(dbEngineTransaccional, dbEngineProcessing, localidadesTransaccional)
-            etlProcesing.ETLProcess()
-        else:
-            print("Datos procesados ya actualizados")
+            etlProcesing.ETLProcess()        
+                
+        
     except Exception:
         traceback.print_exc()
-    print("--------------------------------------------------------------------------")
+    print(">")
         
-# Calculo dimensiones
-calculoDimensiones = Dimensiones(dbEngineProcessing)
+# # Calculo dimensiones
+calculoDimensiones = Dimensiones(dbEngineProcessing, localidadesTransaccional)
 

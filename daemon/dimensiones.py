@@ -1,61 +1,94 @@
 from sqlalchemy.sql import text
+import pandas as pd
+import datetime
+
+
 
 class Dimensiones():
-    def __init__(self, db_processing):
+    def __init__(self, db_processing, localidades):
         self.db = db_processing
-        self.dimensiones = self.getDimensiones()
-        self.foreachDimension()
-        print(" [ x ] Dimensiones actualizadas ")
+        comunas = localidades.getComunas()
+        self.allDimensiones = ["Educacional", "Salud", "Seguridad", "Tecnologia",
+                        "Economico", "Ecologico", "Movilidad", "Diversion"] 
+        self.dimensiones = self.calculateDimensiones(comunas)
 
-    def getDimensiones(self):
-        query = text("SELECT * FROM dimension")
-        result = []
-        with self.db.connect() as con:
-            result = con.execute(query)
-            dimensiones = result.fetchall()
-        return dimensiones
-    
-    def foreachDimension(self):
-        for dim in self.dimensiones:
-            self.calculateDimension(dim[0])
 
-    def calculateDimension(self, id):
-        query = text("""
-            SELECT *
-            FROM Indicador
-            WHERE fecha = (
-                SELECT MAX(fecha)
-                FROM Indicador
-            )
-            AND dimension_id = :dimension_id
-        """)
-        query = query.bindparams(dimension_id=id)
+    def calculateDimensiones(self, comunas):
+        comunas = comunas[['comuna_id']]
 
-        result = []
-        with self.db.connect() as con:
-            result = con.execute(query)
+        with self.db.connect() as conn:
+            
+            getTableNames = text(f"""
+                    SELECT table_name 
+                    FROM information_schema.tables 
+                    WHERE table_name LIKE 'ind_%'""")
+            result = conn.execute(getTableNames)
             indicadores = result.fetchall()
+            
 
-        dim_value = 0
+            cartesian_product = pd.MultiIndex.from_product([self.allDimensiones, 
+                                                            comunas['comuna_id']], 
+                                                            names=['dimension', 'comuna_id'])
+            comunaDimensionPD = pd.DataFrame(index=cartesian_product).reset_index()
         
+            for index, row in comunaDimensionPD.iterrows():
+                valor = 0
+                count = 0
+                for table_name in indicadores:
+                    if table_name[0] != "indicadores":
+                        searchDataInTables = text(f"""
+                            SELECT * FROM {table_name[0]}
+                            WHERE dimension = :dim 
+                            AND comuna_id = :comuna_id
+                        """)
+                        data = {
+                            "dim": row["dimension"],
+                            "comuna_id": row["comuna_id"]
+                        }
+                        result = conn.execute(searchDataInTables, data)
+                        values = result.fetchall()
+                        
+                        for value in values:
+                            valor += value[2]
+                            count += 1
+                            
+                if(count != 0):
+                    valor = valor/count
+                else:
+                    valor = 0 
+                    
+                current_date = datetime.date.today()
 
-        if len(indicadores) != 0:
-            for ind in indicadores:
-                dim_value = dim_value + ind[4]
-            dim_value = dim_value/len(indicadores)
-            self.load(id, dim_value)
-    
-    def load(self, id, valor):
-        query = text("""
-                UPDATE dimension
-                SET valor = :valor
-                WHERE id = :id
-            """)        
-        values = {
-            'valor': valor,
-            'id': id
-        }
+                dimensionData = {
+                    "nombre": row["dimension"],
+                    "valor": valor,
+                    "fecha": current_date,
+                    "flag": True,
+                    "comuna_id": row["comuna_id"]
+                }
+                addDataInTable = text(f"""
+                                INSERT INTO dimension (nombre, valor, fecha, flag, comuna_id)
+                                VALUES (:nombre, :valor, :fecha, :flag, :comuna_id)
+                                      """)
+                self.updateFlag(row["dimension"], row["comuna_id"])
+                conn.execute(addDataInTable, dimensionData)
+                conn.commit()
 
-        with self.db.connect() as con:
-            con.execute(query, values)
-            con.commit()
+    def updateFlag(self, dimension, comuna_id):
+        with self.db.connect() as conn:
+            try:
+                query = text(
+                    f"""
+                    UPDATE dimension
+                    SET flag = False
+                    WHERE nombre = '{dimension}'
+                    AND comuna_id = {comuna_id}
+                    AND flag = True
+                    """
+                )
+                conn.execute(query)
+                conn.commit()     
+
+            except KeyError as error:
+                pass    
+            
