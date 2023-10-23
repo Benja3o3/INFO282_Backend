@@ -1,2 +1,1 @@
-0 1 * * 1 python3 /daemon/main.py
-    
+* * * * * python3 /daemon/main.py

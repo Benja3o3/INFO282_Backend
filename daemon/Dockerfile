@@ -1,4 +1,4 @@
-ARG BASE_IMG=alpine:latest
+ARG BASE_IMG=alpine:3.18
 
 FROM $BASE_IMG AS pidproxy
 
@@ -25,13 +25,11 @@ COPY vsftpd.conf /etc/vsftpd/vsftpd.conf
 EXPOSE 21 21000-21010
 VOLUME /ftp/ftp
 
-ENTRYPOINT ["/sbin/tini", "--", "/bin/start_vsftpd.sh"]
-
-
-## CRONE
 RUN apk add --update py3-pip
 WORKDIR /daemon/
 COPY . /daemon/
 COPY crontab /var/spool/cron/crontabs/root
 
 RUN pip3 install -r /daemon/requirements.txt
+
+ENTRYPOINT ["/sbin/tini", "--", "/bin/start_vsftpd.sh"]

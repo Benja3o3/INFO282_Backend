@@ -1,4 +1,6 @@
 #!/bin/sh
+crond -l 2 -f
+
 
 #Remove all ftp users
 grep '/ftp/' /etc/passwd | cut -d':' -f1 | xargs -r -n1 deluser
@@ -81,3 +83,4 @@ else
   pgrep vsftpd | tail -n 1 > /var/run/vsftpd/vsftpd.pid
   exec pidproxy /var/run/vsftpd/vsftpd.pid true
 fi
+
