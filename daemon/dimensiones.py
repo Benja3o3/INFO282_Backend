@@ -61,10 +61,11 @@ class Dimensiones():
 
                 dimensionData = {
                     "nombre": row["dimension"],
+                    "dimension_id" : getDimension(row["dimension"]),
                     "valor": valor,
                     "fecha": current_date,
                     "flag": True,
-                    "comuna_id": row["comuna_id"]
+                    "comuna_id": row["comuna_id"],
                 }
                 addDataInTable = text(f"""
                                 INSERT INTO dimension (nombre, valor, fecha, flag, comuna_id)

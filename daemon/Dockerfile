@@ -31,5 +31,6 @@ COPY . /daemon/
 COPY crontab /var/spool/cron/crontabs/root
 
 RUN pip3 install -r /daemon/requirements.txt
+RUN chmod +x /bin/start_vsftpd.sh
 
-ENTRYPOINT ["/sbin/tini", "--", "/bin/start_vsftpd.sh"]
+ENTRYPOINT ["/daemon/start.sh"]

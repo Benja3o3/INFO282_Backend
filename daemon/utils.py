@@ -19,7 +19,7 @@ dimensiones = {
     "Diversion": 8
 }
 
-def getDimension(db, dimension):
+def getDimension(dimension):
     try:
         return dimensiones[dimension]
     except:

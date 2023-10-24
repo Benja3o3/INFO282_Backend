@@ -48,7 +48,7 @@ class ETL_Transactional:
                     "fecha" : self.uploadDate,
                     "flag" : True,
                     "comuna_id": int(data["Codigo comuna"].iloc[0]),
-                    "dimension_id": getDimension(self.db, self.dimension)
+                    "dimension_id": getDimension(self.dimension)
                                      
                 }
                 query = text(
@@ -94,7 +94,8 @@ class ETL_Transactional:
                 " fecha Date,"
                 " flag Boolean,"
                 " comuna_id INT,"
-                " dimension_id INT"
+                " dimension_id INT,"
+                " FOREIGN KEY (dimension_id) REFERENCES dimensiones(dimension_id) ON DELETE CASCADE"
                 ")"
             )      
 
@@ -122,6 +123,9 @@ class ETL_Transactional:
             return False  
         return False
 
+#------------------------------------------------------------------#
+#------------------------------------------------------------------#
+#------------------------------------------------------------------#
 
 class ETL_Processing:
     def __init__(self, dbTransaccional, dbProcessing, localidades):
@@ -192,7 +196,8 @@ class ETL_Processing:
                         "fecha" : self.fecha,
                         "flag" : self.flag,
                         "comuna_id" : row['comuna_id'],
-                        "dimension" : self.dimension
+                        "dimension" : self.dimension, 
+                        "dimension_id" : getDimension(self.dimension)
                     }
                     query = text(
                         f"""
@@ -239,7 +244,8 @@ class ETL_Processing:
                 " fecha Date,"
                 " flag Boolean,"
                 " comuna_id INT,"
-                " dimension VARCHAR(255)"
+                " dimension VARCHAR(255),"
+                " dimension_id INT"
                 ")"
             )      
             con.execute(createTableQuery)

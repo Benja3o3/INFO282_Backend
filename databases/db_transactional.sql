@@ -25,7 +25,9 @@ CREATE TABLE IF NOT EXISTS Pais (
 CREATE TABLE IF NOT EXISTS Region (
     region_id serial PRIMARY KEY,
     nombre VARCHAR(255),
-    geometria GEOMETRY(MultiPolygon, 4326)
+    geometria GEOMETRY(MultiPolygon, 4326),
+    pais_id INT,
+    FOREIGN KEY (pais_id) REFERENCES Pais(pais_id) ON DELETE CASCADE
 
 );
 
@@ -79,7 +81,9 @@ DROP TABLE IF EXISTS tempComuna;
 --Crear dimensiones
 CREATE TABLE IF NOT EXISTS Dimensiones (
     dimension_id serial PRIMARY KEY,
-    nombre VARCHAR(255) NOT NULL
+    nombre VARCHAR(255) NOT NULL,
+    comuna_id INT,
+    FOREIGN KEY (comuna_id) REFERENCES comuna (comuna_id) ON DELETE CASCADE
 );
 
 
