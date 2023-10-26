@@ -17,74 +17,94 @@ class Dimensiones():
         comunas = comunas[['comuna_id']]
 
         with self.db.connect() as conn:
-            
-            getTableNames = text(f"""
-                    SELECT table_name 
-                    FROM information_schema.tables 
-                    WHERE table_name LIKE 'ind_%'""")
-            result = conn.execute(getTableNames)
+            queryGetIndicators = text(
+                """ 
+                SELECT * FROM indicadoresinfo 
+                """
+            )  
+            result = conn.execute(queryGetIndicators)
+            indicadoresInfo = result.fetchall()
+            column_names = result.keys()
+            indicadoresinfo = pd.DataFrame(indicadoresInfo, columns=column_names)
+
+            queryGetDimensiones = text(
+                """ 
+                SELECT * FROM dimensiones 
+                """
+            )  
+            result = conn.execute(queryGetDimensiones)
+            dimensionesinfo = result.fetchall()
+
+            queryGetDimensionComuna = text(
+                """
+                SELECT * FROM dimensionescomunas
+                """
+            )
+            result = conn.execute(queryGetDimensionComuna)
+            dimensioncomuna = result.fetchall()
+
+            queryGetIndicadores = text(
+                """
+                SELECT * FROM indicadoresCalculo
+                WHERE flag = true
+                """
+            )
+            result = conn.execute(queryGetIndicadores)
             indicadores = result.fetchall()
+            column_names = result.keys()
+            df = pd.DataFrame(indicadores, columns=column_names)
+            self.updateFlag()
             
+        all_data = []
+        for dimcom in dimensioncomuna:
+            com = dimcom[0]
+            dim = dimcom[1]
+            dimPeso = dimensionesinfo[dim-1][-1]
 
-            cartesian_product = pd.MultiIndex.from_product([self.allDimensiones, 
-                                                            comunas['comuna_id']], 
-                                                            names=['dimension', 'comuna_id'])
-            comunaDimensionPD = pd.DataFrame(index=cartesian_product).reset_index()
-        
-            for index, row in comunaDimensionPD.iterrows():
+            dimcomdf = df.loc[(df['comuna_id'] == com) & (df['dimension_id'] == dim)]
+            suma_valores = dimcomdf['valor'].sum()
+            cantidad_elementos = len(dimcomdf)
+            if(cantidad_elementos == 0):
                 valor = 0
-                count = 0
-                for table_name in indicadores:
-                    if table_name[0] != "indicadores":
-                        searchDataInTables = text(f"""
-                            SELECT * FROM {table_name[0]}
-                            WHERE dimension = :dim 
-                            AND comuna_id = :comuna_id
-                        """)
-                        data = {
-                            "dim": row["dimension"],
-                            "comuna_id": row["comuna_id"]
-                        }
-                        result = conn.execute(searchDataInTables, data)
-                        values = result.fetchall()
-                        
-                        for value in values:
-                            valor += value[2]
-                            count += 1
-                            
-                if(count != 0):
-                    valor = valor/count
-                else:
-                    valor = 0 
-                    
-                current_date = datetime.date.today()
-
-                dimensionData = {
-                    "nombre": row["dimension"],
-                    "dimension_id" : getDimension(row["dimension"]),
+            else:
+                promedio = suma_valores / cantidad_elementos 
+                valor = promedio * dimPeso
+            current_date = datetime.date.today()
+            data = {
                     "valor": valor,
                     "fecha": current_date,
                     "flag": True,
-                    "comuna_id": row["comuna_id"],
+                    "comuna_id": com,
+                    "dimension_id" : dim
                 }
-                addDataInTable = text(f"""
-                                INSERT INTO dimension (nombre, valor, fecha, flag, comuna_id)
-                                VALUES (:nombre, :valor, :fecha, :flag, :comuna_id)
-                                      """)
-                self.updateFlag(row["dimension"], row["comuna_id"])
-                conn.execute(addDataInTable, dimensionData)
-                conn.commit()
+            all_data.append(data)
+        self.loadDimensiones(all_data)
+            
+    def loadDimensiones(self, data_list):
+        columns = ', '.join(data_list[0].keys())
+        values_list = []
 
-    def updateFlag(self, dimension, comuna_id):
+        values = ', '.join([f":{key}" for key in data_list[0].keys()])
+        values_list.append(f"({values})")
+    
+        values = ', '.join(values_list)
+    
+        
+        with self.db.connect() as conn:
+            query = text(f"""INSERT INTO calculodimensiones({columns}) 
+                            VALUES {values}""")
+            
+            conn.execute(query, data_list)
+            conn.commit()
+
+    def updateFlag(self):
         with self.db.connect() as conn:
             try:
                 query = text(
                     f"""
-                    UPDATE dimension
+                    UPDATE calculodimensiones
                     SET flag = False
-                    WHERE nombre = '{dimension}'
-                    AND comuna_id = {comuna_id}
-                    AND flag = True
+                    WHERE flag = True
                     """
                 )
                 conn.execute(query)
@@ -92,4 +112,3 @@ class Dimensiones():
 
             except KeyError as error:
                 pass    
-            

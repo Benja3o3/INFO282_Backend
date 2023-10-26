@@ -10,36 +10,8 @@ import psycopg2
 from localidades import Localidades
 from sqlalchemy import create_engine
 from dimensiones import Dimensiones
-
-
-class database:
-    def __init__(self, database):
-        #load_dotenv()
-        self.conn = None
-        self.database = database
-        self.host = os.environ.get('HOST')
-        self.port = os.environ.get('PORT')
-        self.user = os.environ.get('USER')
-        self.password = os.environ.get('PASSWORD')
-        self.conection()
-
-    def conection(self):
-        # # Parámetros de conexión
-        parametros = {
-            "host": self.host,
-            "port": self.port,
-            "user": self.user,
-            "password": self.password,
-            "database": self.database,
-        }
-        self.conn = psycopg2.connect(**parametros)
-
-
-    def create_sqlalchemy_engine(self):
-            db_uri = f"postgresql://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}"
-            engine = create_engine(db_uri)
-            return engine
-
+from db import db
+from db import dbQuerys
 
 #Cambio de directorio
 directorio_padre = os.path.dirname(os.getcwd())
@@ -49,15 +21,19 @@ os.chdir(nuevo_directorio)
 daemon_folder = os.path.join(os.getcwd(),"./daemon")
 os.chdir(daemon_folder)
 
-#db transactional
-dbTransaccional = database("db_transactional")
+#databases
+dbTransaccional = db.database("db_transactional")
 dbEngineTransaccional = dbTransaccional.create_sqlalchemy_engine()
 localidadesTransaccional = Localidades(dbEngineTransaccional)
 
-#db processing
-dbProcessing = database("db_processing")
+dbProcessing = db.database("db_processing")
 dbEngineProcessing = dbProcessing.create_sqlalchemy_engine()
-localidadesProcessing = Localidades(dbEngineProcessing)
+
+querys = dbQuerys.Querys(dbEngineTransaccional, dbEngineProcessing)
+
+ruta_actual = os.path.dirname(__file__)
+archivos_py = glob.glob(os.path.join(ruta_actual, "Scripts/*.py"), recursive=True)
+
 
 
 nombreETL = input("Ingrese nombre del archivo ETL (sin .py): ")
@@ -69,11 +45,11 @@ module = loader.load_module()
 
 try:
     #ETL Transactional
-    etl = module.ETL_Transactional(dbEngineTransaccional, localidadesTransaccional)
+    etl = module.ETL_Transactional(querys, localidadesTransaccional)
     etl.ETLProcess()
 
     #ETL Processing
-    etlProcesing = module.ETL_Processing(dbEngineTransaccional, dbEngineProcessing, localidadesTransaccional)
+    etlProcesing = module.ETL_Processing(querys, localidadesTransaccional)
     etlProcesing.ETLProcess()        
             
 except Exception:

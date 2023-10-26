@@ -7,23 +7,22 @@ from utils import getLastFile
 
 import psycopg2
 from psycopg2 import sql
+from datetime import datetime
 
 
 class ETL_Transactional:
-    def __init__(self, db, localidades):
+    def __init__(self, querys, localidades):
         self.fuente = "Subtel_antenas"
-        self.nombreData = "Numero_de_antenas"
         self.dimension = "Tecnologia"
-
+        self.tableName = "data_" + self.fuente
+        
         # << No modificar >>
         self.FOLDER = "Source/" + self.fuente + "/"
-        self.TABLENAME = "data_" + self.fuente
         self.PATH = getLastFile(self.FOLDER)
         self.uploadDate = getDateFile(self.PATH)
-        self.db = db
         self.localidades = localidades
         self.extractedData = None
-        self.valor = 0
+        self.querys = querys
         # << No modificar <<
 
     def __string__(self):
@@ -32,247 +31,126 @@ class ETL_Transactional:
     def Extract(self):
         self.extractedData = pd.read_csv(self.PATH, delimiter=";")
 
-    def Tranform(self, comuna):
-        self.extractedData = self.extractedData[["Codigo comuna", "conectividad"]]
-        comunaData = self.extractedData[self.extractedData['Codigo comuna'] == comuna["comuna_id"]]
-        return comunaData    
-    
-    def Load(self, data):
-        self.updateFlag()
-
-        with self.db.connect() as conn:
+    def Tranform(self, comunas):
+        dataToLoad = []
+        for _, comuna in comunas.iterrows():
+            self.extractedData = self.extractedData[["Codigo comuna", "conectividad"]]
+            comunaData = self.extractedData[self.extractedData['Codigo comuna'] == comuna["comuna_id"]]
             try:
+                conectividad = int(comunaData["conectividad"].iloc[0])
                 data = {
-                    "nombre": self.nombreData,
-                    "conectividad": int(data["conectividad"].iloc[0]),
+                    "conectividad": conectividad,
                     "fecha" : self.uploadDate,
                     "flag" : True,
-                    "comuna_id": int(data["Codigo comuna"].iloc[0]),
-                    "dimension_id": getDimension(self.dimension)
-                                     
-                }
-                query = text(
-                    f"""
-                    INSERT INTO {self.TABLENAME} (nombre, conectividad, fecha, flag, comuna_id, dimension_id)
-                    VALUES (:nombre, :conectividad, :fecha, :flag, :comuna_id, :dimension_id)
-                    """
-                )
-                conn.execute(query, data)
-                conn.commit()
-                
+                    "comuna_id": comuna['comuna_id'],
+                    "dimension_id": getDimension(self.dimension)              
+                  }
+                dataToLoad.append(data)
             except:
-                print("Datos no encontrados")
+                conectividad = 0
+                print("No existe información de: ", comuna['nombre'])
+          
+        return(dataToLoad)
+    
+    def Load(self, data):
+        self.querys.loadFileTransactional(self.tableName, data)
 
-    def updateFlag(self):
-        with self.db.connect() as conn:
-            try:
-                data = {
-                    "nombre": self.nombreData, 
-                }
-                
-                query = text(
-                    f"""
-                    UPDATE {self.TABLENAME}
-                    SET flag = True
-                    WHERE nombre = :nombre
-                    AND flag = False
-                    """
-                )
-                conn.execute(query, data)
-                conn.commit()     
-
-            except KeyError as error:
-                print(error)
-                
     def ETLProcess(self):
-        with self.db.connect() as con:     
-            createTableQuery = text(
-                f"CREATE TABLE IF NOT EXISTS {self.TABLENAME} ("
-                " data_id serial PRIMARY KEY,"
-                " nombre VARCHAR(255),"
-                " conectividad INT,"
-                " fecha Date,"
-                " flag Boolean,"
-                " comuna_id INT,"
-                " dimension_id INT,"
-                " FOREIGN KEY (dimension_id) REFERENCES dimensiones(dimension_id) ON DELETE CASCADE"
-                ")"
-            )      
-
-            con.execute(createTableQuery)
-                        
-            queryFecha = text(f"SELECT MAX(fecha) FROM {self.TABLENAME} WHERE flag=:flag")
-            queryFecha = queryFecha.bindparams(flag=True)
-
-            maxFecha = con.execute(queryFecha)
-            rows = maxFecha.fetchall()
-            maxFecha = rows[0][0]
-            con.commit()
-
-        if maxFecha == None or self.uploadDate > maxFecha:
-            try:
+        maxDate = self.querys.getMaxDate(self.tableName) 
+        try:
+            if maxDate == None or self.uploadDate > maxDate:
                 self.Extract()
-                comunas = self.localidades.getComunas()
-                for _, comuna in comunas.iterrows():
-                    data = self.Tranform(comuna)
-                    self.Load(data)
-            except KeyError as error:
-                print(error)
-        else:
-            print("Datos en bruto ya actualizados: ", self.fuente)
-            return False  
-        return False
-
-#------------------------------------------------------------------#
-#------------------------------------------------------------------#
-#------------------------------------------------------------------#
+                self.querys.updateFlagFuente(self.tableName)
+                comunas = self.localidades.getDataComunas()
+                data = self.Tranform(comunas)
+                self.Load(data)
+            else:
+                print("Datos en bruto ya actualizados: ", self.fuente)
+                return True  # Ya actualizados 
+            return False     # No actualizados
+        except Exception as error:
+            print(error)
+    
+## -------------------------------------- ##
+## -------------------------------------- ##
+## -------------------------------------- ##
 
 class ETL_Processing:
-    def __init__(self, dbTransaccional, dbProcessing, localidades):
+    def __init__(self, querys, localidades):
         # Para la base de datos
         self.fuente = "Subtel_antenas"              
-        self.nombreIndicador = "Numero_de_antenas"
-        self.idIndicador = "TEC_NUM_ANTENAS"
+        self.nombreIndicador = "Numero de antenas"
+        
+        # informacion indicador
+        self.indicador_id = 1  ## Valor numerico, revisar si no existe en bd
         self.dimension = "Tecnologia"
         self.prioridad = 1
         self.url =  "https://antenas.subtel.gob.cl/leydetorres/mapaAntenasAutorizadas.html"
+        self.descripcion = "Indicador asociado al numero de antenas en el pais"
         
         # << No modificar >>
-        self.TABLENAME = "data_" + self.fuente
-        self.INDICADORTABLE = "ind_" + self.fuente
-
-        self.valor = 0
-        self.flag = True
-
-        self.dbTransaccional = dbTransaccional
-        self.dbProcessing = dbProcessing
+        self.tableName = "data_" + self.fuente
+        self.dimension = getDimension(self.dimension)
         self.localidades = localidades
-
         self.transaccionalData = None
-        self.calculedData = None
-        # << No modificar >>
-        
+        self.querys = querys
+        # << No modificar >>  
 
     def __string__(self):
         return str(self.nombreIndicador)
 
     def Extract(self):
-        with self.dbTransaccional.connect() as con:     
-            query = text(f"SELECT * FROM {self.TABLENAME} WHERE flag = true")
-            result = con.execute(query)
-            rows = result.fetchall()
-            column_names = result.keys()
-            
-        #Transforma tabla en dataframe
-        df = pd.DataFrame(columns=column_names)
-        for row in rows:
-            row_dict = {
-                column_name: value for column_name, value in zip(column_names, row)
-            }
-            df = pd.concat([df, pd.DataFrame(row_dict, index=[0])], ignore_index=True)
-
-        self.fecha = df['fecha'].iloc[0]
-        self.transaccionalData = df           
-
-              
+        self.transaccionalData = self.querys.getTransactionalData(self.tableName)
+        
     def Transform(self, comuna):
         df = self.transaccionalData
-        df_merged = df.merge(comuna, left_on='comuna_id', right_on='comuna_id', how='inner')
-        df_merged['valor'] = df_merged['conectividad'] / df_merged['Poblacion']
+        df_merged = df.merge(comuna, left_on='comuna_id', right_on='comuna_id', how='right')
+        df_merged['valor'] = df_merged['conectividad'] / self.localidades.getPoblacionTotal()
         data = df_merged[['comuna_id', 'valor', 'dimension_id']]
-        min_value = df_merged['valor'].min()
-        max_value = df_merged['valor'].max()
+        min_value = data['valor'].min()
+        max_value = data['valor'].max()
         data.loc[:, 'valor'] = (data['valor'] - min_value) / (max_value - min_value)
+        data.loc[:, 'valor'] = data['valor'] / data['valor'].sum()
         return data
  
-    def Load(self, data):
-        self.updateFlag()
-        with self.dbProcessing.connect() as conn:       
-            for index, row in data.iterrows():
-                try:
-                    data = {
-                        "indicador": self.idIndicador,
-                        "valor": row['valor'],
-                        "fecha" : self.fecha,
-                        "flag" : self.flag,
-                        "comuna_id" : row['comuna_id'],
-                        "dimension" : self.dimension, 
-                        "dimension_id" : getDimension(self.dimension)
-                    }
-                    query = text(
-                        f"""
-                        INSERT INTO {self.INDICADORTABLE} (indicador, valor, fecha, flag, comuna_id, dimension)
-                        VALUES (:indicador, :valor, :fecha, :flag, :comuna_id, :dimension)
-                        """
-                    )
-                    conn.execute(query, data)
-                    conn.commit()
-                except KeyError as error:
-                    print(error)
-                    
-
-    def updateFlag(self):
-        with self.dbProcessing.connect() as conn:
-            try:
-                data = {
-                    "table": self.INDICADORTABLE,
-                    "indicador_id": self.idIndicador, 
-                }
-                
-                query = text(
-                    f"""
-                    UPDATE {self.INDICADORTABLE}
-                    SET flag = True
-                    WHERE indicador = :indicador_id
-                    AND flag = False
-                    """
-                )
-                conn.execute(query, data)
-                conn.commit()     
-
-            except KeyError as error:
-                print(error)
-                
-    
-    def ETLProcess(self):
-        with self.dbProcessing.connect() as con:     
-            createTableQuery = text(
-                f"CREATE TABLE IF NOT EXISTS {self.INDICADORTABLE} ("
-                " id serial PRIMARY KEY,"
-                " indicador VARCHAR(255),"
-                " valor FLOAT, "
-                " fecha Date,"
-                " flag Boolean,"
-                " comuna_id INT,"
-                " dimension VARCHAR(255),"
-                " dimension_id INT"
-                ")"
-            )      
-            con.execute(createTableQuery)
-            
-            addIndicadorQuery = text(
-                "INSERT INTO indicadores (id, nombre, prioridad, dimension, fuente) "
-                "VALUES (:ind_id, :nombre, :prioridad, :dimension, :fuente )"
-                "ON CONFLICT (id) DO NOTHING"
-            )
+    def Load(self, data):    
+        all_data = [] 
+        for _, values in data.iterrows():
+            valor = values['valor']
+            comuna_id = values['comuna_id']
+            if pd.isnull(valor):
+                valor = 0
             data = {
-                "ind_id": self.idIndicador,
-                "nombre": self.nombreIndicador,
-                "prioridad": self.prioridad,
-                "dimension": self.dimension,
-                "fuente": self.url
+                "valor": valor,
+                "fecha" : datetime.now().date(),
+                "flag" : True,
+                "dimension_id" : self.dimension,
+                "comuna_id" : comuna_id,
+                "indicador_id": self.indicador_id
             }
-            con.execute(addIndicadorQuery, data)
-            
-            con.commit()
+            all_data.append(data)
+        self.querys.loadDataProcessing(all_data)
+        
+    def addETLinfo(self):
+        data = {
+            "indicadoresinfo_id": self.indicador_id,
+            "nombre": self.nombreIndicador,
+            "prioridad": self.prioridad,
+            "descripcion": self.descripcion,
+            "fuente": self.url,
+            "dimension": self.dimension
+        }
+        self.querys.addIndicatorsInfo(data)
 
+    def ETLProcess(self):
         try:
+            self.addETLinfo()
             self.Extract()
-            comunas = self.localidades.getComunas()
+            self.querys.updateFlagProcessing(self.indicador_id)
+            comunas = self.localidades.getDataComunas()
             data = self.Transform(comunas)
             self.Load(data)
 
-        except Exception:
-            traceback.print_exc()
-
+        except Exception as error:
+            print(error)
         return {"OK": 200, "mesagge": "Indicators is updated successfully"}

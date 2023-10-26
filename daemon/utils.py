@@ -41,4 +41,3 @@ def getLastFile(folderPath):
         return ultimo_archivo
     else:
         print("La carpeta está vacía." ,folderPath)
-
