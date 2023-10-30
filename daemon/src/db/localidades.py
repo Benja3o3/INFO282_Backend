@@ -7,7 +7,7 @@ class Localidades:
         self.comunas = self.getComunas()
         self.poblacionTotal = self.comunas['poblacion'].sum()
         print(self.poblacionTotal)
-        self.regiones = None
+        self.regiones = self.getRegiones()
                 
     def getComunas(self):
         #Database query
@@ -21,9 +21,23 @@ class Localidades:
                 self.comunas.append(list(comuna))   
         df_comunas = pd.DataFrame(self.comunas, columns=column_names)
         return df_comunas
-        
+    def getRegiones(self):
+        self.regiones = []
+        with self.db.connect() as con:
+            query = text("SELECT * FROM Region")
+            result = con.execute(query)
+            regiones = result.fetchall()
+            column_names = result.keys()
+            for region in regiones:
+                self.regiones.append(list(region))   
+        df_regiones = pd.DataFrame(self.regiones, columns=column_names)
+        return df_regiones
+    
     def getPoblacionTotal(self):
         return self.poblacionTotal
 
     def getDataComunas(self):
         return self.comunas
+
+    def getDataRegiones(self):
+        return self.regiones

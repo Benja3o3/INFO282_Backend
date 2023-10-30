@@ -44,7 +44,6 @@ class ETL_Transactional:
             except:
                 conectividad = 0
                 print("No existe información de: ", comuna['nombre'])
-          
         return(dataToLoad)
     
     def Load(self, data):

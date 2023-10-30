@@ -7,11 +7,13 @@ import traceback
 import psycopg2
 #from dotenv import load_dotenv
 
-from daemon.src.db.localidades import Localidades
+from src.db.localidades import Localidades
 from sqlalchemy import create_engine
-from daemon.src.Calculos.dimensiones import Dimensiones
-from db import db
-from db import dbQuerys
+from src.calculo.dimensiones import Dimensiones
+from src.calculo.bienestar import Bienestar
+from src.calculo.calculoRegiones import calculoRegiones
+from src.db import db
+from src.db import dbQuerys
 
 #Cambio de directorio
 directorio_padre = os.path.dirname(os.getcwd())
@@ -39,7 +41,7 @@ archivos_py = glob.glob(os.path.join(ruta_actual, "Scripts/*.py"), recursive=Tru
 nombreETL = input("Ingrese nombre del archivo ETL (sin .py): ")
 utils_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(utils_dir)
-dirETL = "/daemon/Scripts/" + nombreETL + ".py"
+dirETL = "/daemon/src/etls/" + nombreETL + ".py"
 loader = importlib.machinery.SourceFileLoader(nombreETL, dirETL)
 module = loader.load_module()
 
@@ -48,9 +50,9 @@ try:
     etl = module.ETL_Transactional(querys, localidadesTransaccional)
     etl.ETLProcess()
 
-    #ETL Processing
-    etlProcesing = module.ETL_Processing(querys, localidadesTransaccional)
-    etlProcesing.ETLProcess()        
+    # #ETL Processing
+    # etlProcesing = module.ETL_Processing(querys, localidadesTransaccional)
+    # etlProcesing.ETLProcess()        
             
 except Exception:
     traceback.print_exc()

@@ -75,21 +75,24 @@ class Querys:
     
     
     def getTransactionalData(self, tableName):
-        with self.dbTran.connect() as con:  
-            try:   
+        with self.dbTran.connect() as con:
+            try:
                 query = text(f"""
                             SELECT * FROM {tableName}
                             WHERE flag = true""")
                 result = con.execute(query)
                 rows = result.fetchall()
-                
+
                 column_names = result.keys()
-                df = pd.DataFrame(columns=column_names)
+                data_list = []
+
                 for row in rows:
                     row_dict = {
                         column_name: value for column_name, value in zip(column_names, row)
                     }
-                    df = pd.concat([df, pd.DataFrame(row_dict, index=[0])], ignore_index=True)
+                    data_list.append(row_dict)
+
+                df = pd.DataFrame(data_list)
 
                 return df
             except Exception as error:
@@ -123,5 +126,5 @@ class Querys:
                 )
                 conn.execute(query, data)
                 conn.commit()   
-            except:
+            except :
                 print("Error al añadir informacion a indicadores")

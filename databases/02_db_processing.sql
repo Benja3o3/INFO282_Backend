@@ -124,7 +124,6 @@ CREATE TABLE IF NOT EXISTS calculoindicadorescomuna (
     FOREIGN KEY (indicador_id) REFERENCES Indicadoresinfo(indicadoresinfo_id) ON DELETE CASCADE
 );
 
-CREATE INDEX idx_join ON calculoindicadorescomuna (comuna_id, dimension_id);
 
 CREATE TABLE IF NOT EXISTS calculobienestarComuna (
     bienestar_id SERIAL PRIMARY KEY,
@@ -157,6 +156,18 @@ CREATE TABLE IF NOT EXISTS calculodimensionesregion (
     region_id INT,
     dimension_id INT,
     FOREIGN KEY (region_id, dimension_id) REFERENCES dimensionesregiones(region_id, dimension_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS calculoindicadoresRegion (
+    calculoindicador_id SERIAL PRIMARY KEY,
+    valor FLOAT,
+    fecha DATE,
+    flag BOOLEAN,
+    dimension_id INT NOT NULL,
+    region_id INT NOT NULL,
+    indicador_id INT NOT NULL,
+    FOREIGN KEY (region_id, dimension_id) REFERENCES dimensionesregiones(region_id, dimension_id) ON DELETE CASCADE,
+    FOREIGN KEY (indicador_id) REFERENCES Indicadoresinfo(indicadoresinfo_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS calculobienestarregion (
@@ -193,11 +204,25 @@ CREATE TABLE IF NOT EXISTS calculodimensionespais (
     FOREIGN KEY (pais_id, dimension_id) REFERENCES dimensionespais(pais_id, dimension_id) ON DELETE CASCADE
 );
 
+
+CREATE TABLE IF NOT EXISTS calculoindicadorespais (
+    calculoindicador_id SERIAL PRIMARY KEY,
+    valor FLOAT,
+    fecha DATE,
+    flag BOOLEAN,
+    dimension_id INT NOT NULL,
+    pais_id INT NOT NULL,
+    indicador_id INT NOT NULL,
+    FOREIGN KEY (pais_id, dimension_id) REFERENCES dimensionesPais(pais_id, dimension_id) ON DELETE CASCADE,
+    FOREIGN KEY (indicador_id) REFERENCES Indicadoresinfo(indicadoresinfo_id) ON DELETE CASCADE
+);
+
+
 CREATE TABLE IF NOT EXISTS calculobienestarpais (
     bienestar_id SERIAL PRIMARY KEY,
-    paid_id INT NOT NULL,
+    pais_id INT NOT NULL,
     valor_bienestar FLOAT,
     flag BOOLEAN,
     fecha DATE, 
-    FOREIGN KEY (paid_id) REFERENCES Pais(pais_id) ON DELETE CASCADE
+    FOREIGN KEY (pais_id) REFERENCES Pais(pais_id) ON DELETE CASCADE
 );
