@@ -1,26 +1,25 @@
 export const getIndicatorsFromAllComunas = (
   indicadorDimension: string
 ) => `SELECT
-c.CUT AS Comuna_CUT,
-d.nombre AS Dimension,
-i.nombre AS Indicador,
-i.valor AS Valor
-FROM Comuna c
-JOIN Dimension d ON c.CUT = d.comuna_id
-JOIN Indicador i ON d.ID = i.dimension_id
-WHERE d.nombre = '${indicadorDimension}'
-ORDER BY c.CUT, d.nombre, i.nombre;`;
+ic.comuna_id AS cut,
+d.nombre AS dimension,
+ii.nombre AS indicador,
+ic.valor
+FROM indicadorescalculo ic
+JOIN indicadoresinfo ii ON ic.indicador_id = ii.indicadoresinfo_id
+JOIN dimensiones d ON ic.dimension_id = d.dimension_id
+WHERE d.nombre = '${indicadorDimension}' AND ic.flag = true
+ORDER BY ic.comuna_id, d.nombre, ii.nombre;`;
 
 export const getIndicatorByCUT = (indicatorId: string) => `SELECT
-c.CUT AS Comuna_CUT,
-d.nombre AS Dimension,
-i.nombre AS Indicador,
-i.valor AS Valor
-FROM Comuna c
-JOIN Dimension d ON c.CUT = d.comuna_id
-JOIN Indicador i ON d.ID = i.dimension_id
-WHERE c.CUT = '${indicatorId}'
-ORDER BY c.CUT, d.nombre, i.nombre;`;
+d.nombre AS dimension,
+ii.nombre AS indicador,
+ic.valor
+FROM indicadorescalculo ic
+JOIN indicadoresinfo ii ON ic.indicador_id = ii.indicadoresinfo_id
+JOIN dimensiones d ON ic.dimension_id = d.dimension_id
+WHERE ic.comuna_id = '${indicatorId}' AND ic.flag = true
+ORDER BY d.nombre, ii.nombre;`;
 
 export const getAllIndicators = `SELECT * 
-FROM indicador`;
+FROM indicadorescalculo`;

@@ -1,12 +1,11 @@
-export const getAllComunas = `SELECT * FROM comuna`;
+export const getAllComunas = `SELECT * FROM comunas`;
 
 export const getAllIndicatorsFromOnlyComuna = (comunaId: string) => `SELECT
-C.CUT AS ComunaID,
-D.nombre AS DimensionNombre,
-D.valor AS DimensionValor,
-I.nombre AS IndicadorNombre,
-I.valor AS IndicadorValor
-FROM Comuna AS C
-LEFT JOIN Dimension AS D ON C.CUT = D.comuna_id
-LEFT JOIN Indicador AS I ON D.ID = I.dimension_id
-WHERE C.CUT = '${comunaId}'`;
+i.nombre AS indicador_nombre,
+d.nombre AS dimension_nombre,
+ic.valor AS valor_indicador
+FROM indicadoresCalculo ic
+JOIN Indicadoresinfo i ON ic.indicador_id = i.indicadoresinfo_id
+JOIN dimensionescomunas dc ON ic.comuna_id = dc.comuna_id AND ic.dimension_id = dc.dimension_id
+JOIN Dimensiones d ON dc.dimension_id = d.dimension_id
+WHERE ic.comuna_id ='${comunaId}';`;
