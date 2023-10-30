@@ -7,11 +7,12 @@ import traceback
 import psycopg2
 #from dotenv import load_dotenv
 
-from localidades import Localidades
+from src.db.localidades import Localidades
 from sqlalchemy import create_engine
-from dimensiones import Dimensiones
-from db import db
-from db import dbQuerys
+from src.calculo.dimensiones import Dimensiones
+from src.calculo.bienestar import Bienestar
+from src.db import db
+from src.db import dbQuerys
 
 #Cambio de directorio
 directorio_padre = os.path.dirname(os.getcwd())
@@ -30,9 +31,9 @@ dbProcessing = db.database("db_processing")
 dbEngineProcessing = dbProcessing.create_sqlalchemy_engine()
 
 querys = dbQuerys.Querys(dbEngineTransaccional, dbEngineProcessing)
-
 ruta_actual = os.path.dirname(__file__)
-archivos_py = glob.glob(os.path.join(ruta_actual, "Scripts/*.py"), recursive=True)
+archivos_py = glob.glob(os.path.join(ruta_actual, "src/etls/*.py"), recursive=True)
+
 
 for archivo_py in archivos_py:
     nombre_modulo = os.path.splitext(os.path.basename(archivo_py))[0]
@@ -59,4 +60,4 @@ for archivo_py in archivos_py:
         
 # Calculo dimensiones
 calculoDimensiones = Dimensiones(dbEngineProcessing, localidadesTransaccional)
-
+calculoBienestar = Bienestar(dbEngineProcessing, localidadesTransaccional)

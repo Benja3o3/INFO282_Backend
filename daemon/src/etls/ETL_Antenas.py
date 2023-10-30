@@ -1,17 +1,13 @@
 import pandas as pd
-import traceback
+from src.calculo.utils import getDateFile, getDimension, getLastFile
 from sqlalchemy.sql import text
-from utils import getDimension
-from utils import getDateFile
-from utils import getLastFile
 
-import psycopg2
 from psycopg2 import sql
 from datetime import datetime
 
-
 class ETL_Transactional:
     def __init__(self, querys, localidades):
+
         self.fuente = "Subtel_antenas"
         self.dimension = "Tecnologia"
         self.tableName = "data_" + self.fuente
@@ -110,7 +106,6 @@ class ETL_Processing:
         min_value = data['valor'].min()
         max_value = data['valor'].max()
         data.loc[:, 'valor'] = (data['valor'] - min_value) / (max_value - min_value)
-        data.loc[:, 'valor'] = data['valor'] / data['valor'].sum()
         return data
  
     def Load(self, data):    

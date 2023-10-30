@@ -3,7 +3,6 @@ import pandas as pd
 import datetime
 
 
-
 class Dimensiones():
     def __init__(self, db_processing, localidades):
         self.db = db_processing

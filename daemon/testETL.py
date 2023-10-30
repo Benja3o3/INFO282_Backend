@@ -7,9 +7,9 @@ import traceback
 import psycopg2
 #from dotenv import load_dotenv
 
-from localidades import Localidades
+from daemon.src.db.localidades import Localidades
 from sqlalchemy import create_engine
-from dimensiones import Dimensiones
+from daemon.src.Calculos.dimensiones import Dimensiones
 from db import db
 from db import dbQuerys
 

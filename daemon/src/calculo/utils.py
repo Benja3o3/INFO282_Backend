@@ -7,7 +7,6 @@ import glob
 import pandas as pd
 
 
-
 dimensiones = {
     "Educacional": 1,
     "Salud": 2,

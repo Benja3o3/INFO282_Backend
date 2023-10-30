@@ -2,9 +2,9 @@ import pandas as pd
 import traceback
 from datetime import datetime
 from sqlalchemy.sql import text
-from utils import getDimension
-from utils import getDateFile
-from utils import getLastFile
+from daemon.src.Calculos.utils import getDimension
+from daemon.src.Calculos.utils import getDateFile
+from daemon.src.Calculos.utils import getLastFile
 
 
 class ETL_Transactional:

@@ -125,3 +125,12 @@ CREATE TABLE IF NOT EXISTS indicadoresCalculo (
 );
 
 CREATE INDEX idx_join ON indicadoresCalculo (comuna_id, dimension_id);
+
+CREATE TABLE IF NOT EXISTS bienestar (
+    bienestar_id SERIAL PRIMARY KEY,
+    comuna_id INT NOT NULL,
+    valor_bienestar FLOAT,
+    flag BOOLEAN,
+    fecha DATE, 
+    FOREIGN KEY (comuna_id) REFERENCES Comunas(comuna_id) ON DELETE CASCADE
+);

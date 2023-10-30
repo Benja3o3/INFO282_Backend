@@ -2,9 +2,9 @@ import pandas as pd
 import traceback
 from datetime import datetime
 from sqlalchemy.sql import text
-from utils import getDimension 
-from utils import getDateFile
-from utils import getLastFile
+from daemon.src.Calculos.utils import getDimension 
+from daemon.src.Calculos.utils import getDateFile
+from daemon.src.Calculos.utils import getLastFile
 
 '''
 riesgo de deserción escolar
@@ -16,11 +16,11 @@ socioeconómica de sus estudiantes
 
 class ETL_Transactional:
     def __init__(self, db, localidades):
-        self.fuente = "BCN: Internet Fija"
-        self.nombre = "Internet Fija"        
+        self.fuente = "BCN: Cantidad de suscriptores de tv pago"
+        self.nombre = "Cantidad de suscriptores de tv pago"        
         self.valor = 0
 
-        self.FOLDER = "./Source/BCN_InternetFija"   
+        self.FOLDER = "./Source/BCN_TVPago"   
         self.PATH = getLastFile(self.FOLDER)
         self.uploadDate = getDateFile(self.PATH)        
 
@@ -40,17 +40,18 @@ class ETL_Transactional:
         self.extractedData["Unidad territorial"] = self.extractedData[
             "Unidad territorial"]
 
+        print(self.extractedData)
 
     def Tranform(self, comuna):
         # Transforma datos para ser subidos a database
         df = self.extractedData[(self.extractedData['Unidad territorial']).str.contains(comuna['Nombre'], case = False)]
-
         if(df.empty):
             self.valor = 0
             return
         self.valor = df.iloc[-1, -1]
+        
 
-
+        
     def Load(self, comuna):
         query = text("INSERT INTO dataenbruto (valor, nombre, fuente, fecha, comuna_id) VALUES (:valor, :nombre, :fuente, :fecha, :comuna_id)")
         values = {
@@ -90,9 +91,9 @@ class ETL_Transactional:
 class ETL_Processing:
     def __init__(self, dbTransaccional, dbProcessing, localidades):
         #Constructor
-        self.fuente = "BCN: Internet Fija"
-        self.nombreIndicador = "Internet Fija"  
-        self.dimension = "Tecnologia"   
+        self.fuente = "BCN: Cantidad de suscriptores tv pago"
+        self.nombreIndicador = "Cantidad de suscriptores tv pago"  
+        self.dimension = "Diversion"   
         self.prioridad = 1  
         self.valor = 0
 
@@ -131,7 +132,8 @@ class ETL_Processing:
         df = self.transaccionalData[self.transaccionalData['comuna_id'] == comuna['CUT']]
         if(df.empty):
             self.valor = 0
-        self.valor = (df["valor"].tail(1).iloc[0] / comuna['Poblacion'] )* 100
+        self.valor = df["valor"].tail(1).iloc[0] // df["poblacion"]
+        return
         
     def Load(self, comuna):
         query = text("INSERT INTO indicador (nombre, prioridad, fuente, valor, fecha, dimension_id) VALUES (:nombre, :prioridad, :fuente, :valor, :fecha ,:dimension_id)")
