@@ -15,7 +15,7 @@ class Bienestar():
         with self.db.connect() as conn:
             queryChangeFlag = text(
                 f"""
-                UPDATE bienestar
+                UPDATE calculobienestarcomuna  
                 SET flag = False
                 WHERE flag = True
                 """
@@ -24,9 +24,9 @@ class Bienestar():
             date = datetime.date.today().isoformat()
             queryCalculatePromedio = text(
                         f"""
-                        INSERT INTO bienestar (comuna_id, valor_bienestar, flag, fecha)
+                        INSERT INTO calculobienestarcomuna (comuna_id, valor_bienestar, flag, fecha)
                         SELECT comuna_id, AVG(valor) as valor_bienestar, true as flag, '{date}'::date as fecha
-                        FROM calculodimensiones 
+                        FROM calculodimensionescomuna 
                         WHERE flag = true 
                         GROUP BY comuna_id 
                         """

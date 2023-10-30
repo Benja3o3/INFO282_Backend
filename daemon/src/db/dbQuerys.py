@@ -37,10 +37,9 @@ class Querys:
         values_list.append(f"({values})")
     
         values = ', '.join(values_list)
-      
         
         with self.dbPro.connect() as conn:
-            query = text(f"""INSERT INTO indicadoresCalculo({columns}) 
+            query = text(f"""INSERT INTO calculoindicadorescomuna({columns}) 
                             VALUES {values}""")
             conn.execute(query, data_list)
             conn.commit()
@@ -101,7 +100,7 @@ class Querys:
             try:
                 query = text(
                     f"""
-                    UPDATE indicadoresCalculo 
+                    UPDATE calculoindicadorescomuna 
                     SET flag = False
                     WHERE indicador_id = {indicador_id}
                     AND flag = True

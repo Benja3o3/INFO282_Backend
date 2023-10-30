@@ -28,7 +28,7 @@ class Dimensiones():
 
             queryGetDimensiones = text(
                 """ 
-                SELECT * FROM dimensiones 
+                SELECT * FROM dimensionesinfo
                 """
             )  
             result = conn.execute(queryGetDimensiones)
@@ -44,7 +44,7 @@ class Dimensiones():
 
             queryGetIndicadores = text(
                 """
-                SELECT * FROM indicadoresCalculo
+                SELECT * FROM calculoindicadorescomuna
                 WHERE flag = true
                 """
             )
@@ -90,7 +90,7 @@ class Dimensiones():
     
         
         with self.db.connect() as conn:
-            query = text(f"""INSERT INTO calculodimensiones({columns}) 
+            query = text(f"""INSERT INTO calculodimensionescomuna({columns}) 
                             VALUES {values}""")
             
             conn.execute(query, data_list)
@@ -101,7 +101,7 @@ class Dimensiones():
             try:
                 query = text(
                     f"""
-                    UPDATE calculodimensiones
+                    UPDATE calculodimensionescomuna
                     SET flag = False
                     WHERE flag = True
                     """

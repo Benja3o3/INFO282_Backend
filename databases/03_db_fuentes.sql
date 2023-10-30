@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS data_Subtel_antenas(
     dimension_id INT,
     FOREIGN KEY(comuna_id, dimension_id) REFERENCES comunasdimensiones(comuna_id, dimension_id) ON DELETE CASCADE
 );
-CREATE INDEX idx_join ON data_subtel_antenas (comuna_id, dimension_id);
+--CREATE INDEX idx_join ON data_subtel_antenas (comuna_id, dimension_id);
 
 
 CREATE TABLE IF NOT EXISTS data_cem_establecimientos(
@@ -27,4 +27,4 @@ CREATE TABLE IF NOT EXISTS data_cem_establecimientos(
     dimension_id INT,
     FOREIGN KEY(comuna_id, dimension_id) REFERENCES comunasdimensiones(comuna_id, dimension_id) ON DELETE CASCADE
 );
-CREATE INDEX idx_join ON data_subtel_antenas (comuna_id, dimension_id);
+--CREATE INDEX idx_join ON data_cem_establecimientos (comuna_id, dimension_id);
