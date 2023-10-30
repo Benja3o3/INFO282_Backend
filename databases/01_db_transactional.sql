@@ -15,26 +15,12 @@ CREATE EXTENSION postgis;
 
 -- Crear data pais
 CREATE TABLE IF NOT EXISTS Pais (
-    pais_id serial PRIMARY KEY,
+    pais_id INT PRIMARY KEY,
     nombre VARCHAR(255),
     geometria GEOMETRY(MultiPolygon, 4326)
 );
-
-
-CREATE TABLE tempPais (data jsonb);
-COPY tempPais (data) FROM '/docker-entrypoint-initdb.d/jsonFiles/paisDB.json';
-
-INSERT INTO Pais (pais_id, nombre, geometria)
-SELECT DISTINCT (data->>'pais_id')::INT,
-    (data->>'nombre')::VARCHAR(255) as nombre,
-    ST_SetSRID(ST_Multi(ST_GeomFromGeoJSON(data->>'geometria')), 4326) as geometria
-FROM tempPais
-WHERE NOT EXISTS (
-    SELECT 1
-    FROM Pais p
-    WHERE p.pais_id = (data->>'pais_id')::INT
-);
-DROP TABLE IF EXISTS tempPais;
+INSERT INTO Pais (pais_id)
+VALUES (1);
 
 -- Crear data region
 CREATE TABLE IF NOT EXISTS Region (

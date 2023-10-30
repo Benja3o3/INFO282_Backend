@@ -1,7 +1,6 @@
 import pandas as pd
 from src.calculo.utils import getDateFile, getDimension, getLastFile
 from sqlalchemy.sql import text
-
 from psycopg2 import sql
 from datetime import datetime
 

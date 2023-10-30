@@ -19,7 +19,6 @@ FROM $BASE_IMG
 COPY --from=pidproxy /usr/bin/pidproxy /usr/bin/pidproxy
 RUN apk --no-cache add vsftpd tini
 
-COPY start_vsftpd.sh /bin/start_vsftpd.sh
 COPY vsftpd.conf /etc/vsftpd/vsftpd.conf
 
 EXPOSE 21 21000-21010
@@ -31,6 +30,6 @@ COPY . /daemon/
 COPY crontab /var/spool/cron/crontabs/root
 
 RUN pip3 install -r /daemon/requirements.txt
-RUN chmod +x /bin/start_vsftpd.sh
+RUN chmod +x /daemon/start.sh
 
-ENTRYPOINT ["/daemon/start.sh"]
+CMD ["/daemon/start.sh"]
