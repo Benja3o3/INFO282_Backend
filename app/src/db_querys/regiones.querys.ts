@@ -1,38 +1,38 @@
 export const getBienestarAllRegiones = () => `SELECT
-comuna_id,
+region_id,
 valor_bienestar
-FROM calculobienestarcomuna
+FROM calculobienestarregion
 WHERE flag = true
-ORDER BY comuna_id;`;
+ORDER BY region_id;`;
 
 export const getBienestarOneRegion = (comunaId: string) => `SELECT
 valor_bienestar
-FROM calculobienestarcomuna
-WHERE flag = true AND comuna_id = '${comunaId}'`;
+FROM calculobienestarregion
+WHERE flag = true AND region_id = '${comunaId}'`;
 
 export const getDimensionesCategoria = (categoria: string) => `SELECT
-cd.comuna_id,
+cd.region_id,
 di.nombre,
 cd.valor
-FROM calculodimensionescomuna cd
+FROM calculodimensionesregion cd
 JOIN dimensionesinfo di ON cd.dimension_id = di.dimension_id
 WHERE cd.flag = true AND di.nombre = '${categoria}'
-ORDER BY cd.comuna_id;`;
+ORDER BY cd.region_id;`;
 
 export const getDimensionesOneRegion = (comunaId: string) => `SELECT
 di.nombre,
 cd.valor
-FROM calculodimensionescomuna cd
+FROM calculodimensionesregion cd
 JOIN dimensionesinfo di ON cd.dimension_id = di.dimension_id
-WHERE cd.flag = true AND cd.comuna_id = '${comunaId}'
+WHERE cd.flag = true AND cd.region_id = '${comunaId}'
 ORDER BY di.nombre;`;
 
 export const getIndicadoresOneRegion = (comunaId: string) => `SELECT
 di.nombre as dimension,
 ii.nombre as indicador,
 ci.valor
-FROM calculoindicadorescomuna ci
+FROM calculoindicadoresregion ci
 JOIN dimensionesinfo di ON ci.dimension_id = di.dimension_id
 JOIN indicadoresinfo ii ON ii.indicadoresinfo_id = ci.indicador_id
-WHERE ci.flag = true AND ci.comuna_id = '${comunaId}'
+WHERE ci.flag = true AND ci.region_id = '${comunaId}'
 ORDER BY dimension, indicador`;

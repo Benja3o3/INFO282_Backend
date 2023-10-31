@@ -1,22 +1,22 @@
 export const getBienestarOnePais = () => `SELECT
 valor_bienestar
-FROM calculobienestarcomuna
+FROM calculobienestarpais
 WHERE flag = true;`;
 
 export const getDimensionesOnePais = () => `SELECT
 di.nombre,
 cd.valor
-FROM calculodimensionescomuna cd
+FROM calculodimensionespais cd
 JOIN dimensionesinfo di ON cd.dimension_id = di.dimension_id
-WHERE cd.flag = true'
+WHERE cd.flag = true
 ORDER BY di.nombre;`;
 
 export const getIndicadoresOnePais = () => `SELECT
 di.nombre as dimension,
 ii.nombre as indicador,
 ci.valor
-FROM calculoindicadorescomuna ci
+FROM calculoindicadorespais ci
 JOIN dimensionesinfo di ON ci.dimension_id = di.dimension_id
 JOIN indicadoresinfo ii ON ii.indicadoresinfo_id = ci.indicador_id
-WHERE ci.flag = true'
+WHERE ci.flag = true
 ORDER BY dimension, indicador`;
