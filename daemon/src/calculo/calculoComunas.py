@@ -1,19 +1,17 @@
 from sqlalchemy.sql import text
-import pandas as pd
 import datetime
+import pandas as pd
 
-
-class Dimensiones():
+class calculoComunas():    
     def __init__(self, db_processing, localidades):
         self.db = db_processing
-        comunas = localidades.getComunas()
+        regiones = localidades.getDataRegiones()     
         self.allDimensiones = ["Educacional", "Salud", "Seguridad", "Tecnologia",
-                        "Economico", "Ecologico", "Movilidad", "Diversion"] 
-        self.dimensiones = self.calculateDimensiones(comunas)
-
-
-    def calculateDimensiones(self, comunas):
-        comunas = comunas[['comuna_id']]
+                        "Economico", "Ecologico", "Movilidad", "Diversion"]     
+        self.calculateDimensiones()
+        self.calculateBienestar()
+    
+    def calculateDimensiones(self):
 
         with self.db.connect() as conn:
             queryGetIndicators = text(
@@ -111,3 +109,27 @@ class Dimensiones():
 
             except KeyError as error:
                 pass    
+
+
+    def calculateBienestar(self):
+        with self.db.connect() as conn:
+            queryChangeFlag = text(
+                f"""
+                UPDATE calculobienestarcomuna  
+                SET flag = False
+                WHERE flag = True
+                """
+            )
+            conn.execute(queryChangeFlag)
+            date = datetime.date.today().isoformat()
+            queryCalculatePromedio = text(
+                        f"""
+                        INSERT INTO calculobienestarcomuna (comuna_id, valor_bienestar, flag, fecha)
+                        SELECT comuna_id, AVG(valor) as valor_bienestar, true as flag, '{date}'::date as fecha
+                        FROM calculodimensionescomuna 
+                        WHERE flag = true 
+                        GROUP BY comuna_id 
+                        """
+                    )
+            conn.execute(queryCalculatePromedio)
+            conn.commit()

@@ -5,7 +5,9 @@ import platform
 import glob
 
 import pandas as pd
-
+import numpy as np
+from sklearn.preprocessing import StandardScaler
+from scipy.special import expit
 
 dimensiones = {
     "Educacional": 1,
@@ -17,6 +19,13 @@ dimensiones = {
     "Movilidad": 7,
     "Diversion": 8
 }
+
+def dataNormalize(data):
+    scaler = StandardScaler()
+    data.loc[:, 'valor'] = scaler.fit_transform(data[['valor']])
+    data.loc[:, 'valor'] = expit(data['valor'])
+
+    return data
 
 def getDimension(dimension):
     try:

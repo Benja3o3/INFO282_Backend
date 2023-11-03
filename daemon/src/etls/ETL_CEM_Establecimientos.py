@@ -1,5 +1,5 @@
 import pandas as pd
-from src.calculo.utils import getDateFile, getDimension, getLastFile
+from src.calculo.utils import getDateFile, getDimension, getLastFile, dataNormalize
 from sqlalchemy.sql import text
 from psycopg2 import sql
 from datetime import datetime
@@ -28,8 +28,8 @@ class ETL_Transactional:
 
     def Tranform(self, comunas):
         dataToLoad = []
+        self.extractedData = self.extractedData[["COD_COM_RBD", "NOM_RBD", "COD_DEPE2", "RURAL_RBD", "LATITUD", "LONGITUD", "PAGO_MATRICULA", "PAGO_MENSUAL"]]
         for _, comuna in comunas.iterrows():
-            self.extractedData = self.extractedData[["COD_COM_RBD", "NOM_RBD", "COD_DEPE2", "RURAL_RBD", "LATITUD", "LONGITUD", "PAGO_MATRICULA", "PAGO_MENSUAL"]]
             comunaData = self.extractedData[self.extractedData['COD_COM_RBD'] == comuna["comuna_id"]]
             for _, row in comunaData.iterrows():
                 try:
@@ -123,13 +123,10 @@ class ETL_Processing:
         data = data.reset_index()
         data.columns = ['comuna_id', 'valor']
         data['dimension_id'] = self.dimension_id
-        data['valor'] = data['valor'] / self.localidades.getPoblacionTotal()
+        data['valor'] = data['valor'] / comuna['poblacion']
         
-        #Normalizacion
-        min_value = data['valor'].min()
-        max_value = data['valor'].max()
-        data.loc[:, 'valor'] = (data['valor'] - min_value) / (max_value - min_value)
-        return data
+        normalized = dataNormalize(data)
+        return normalized
     
     def TransformMunicipal(self, comuna):
         df = self.transaccionalData
@@ -139,16 +136,10 @@ class ETL_Processing:
         data = data.reset_index()
         data.columns = ['comuna_id', 'valor']
         data['dimension_id'] = self.dimension_id
-        data['valor'] = data['valor'] / self.localidades.getPoblacionTotal()
+        data['valor'] = data['valor'] / comuna['poblacion']
         
-        #Normalizacion
-        min_value = data['valor'].min()
-        max_value = data['valor'].max()
-        data.loc[:, 'valor'] = (data['valor'] - min_value) / (max_value - min_value)
-        
-        data['valor'] = 1.0 - data['valor']
-
-        return data
+        normalized = dataNormalize(data)
+        return normalized
     
     def Load(self, data, indicador_id,  dimension_id):    
         all_data = [] 

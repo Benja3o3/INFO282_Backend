@@ -8,7 +8,7 @@ from datetime import datetime
 class ETL_Transactional:
     def __init__(self, querys, localidades):
 
-        self.fuente = "Subtel_antenas"
+        self.fuente = "Subtel_Conexion_fija_internet"
         self.dimension = "Tecnologia"
         self.tableName = "data_" + self.fuente
         
@@ -25,39 +25,67 @@ class ETL_Transactional:
         return str(self.nombreData)
 
     def Extract(self):
-        self.extractedData = pd.read_csv(self.PATH, delimiter=";")
-
-    def Tranform(self, comunas):
+        df = pd.read_excel(self.PATH, sheet_name="7.11.CO_FIJAS_COMUNA", header = 8)
+        ene_columns = [col for col in df.columns if col.startswith('Ene')]
+        index_columna = df.columns.get_loc(ene_columns[-1])
+        subset = df.iloc[:, index_columna:]
+        subset['Comuna'] = df['Comuna']
+        subset = subset.dropna(subset=['Comuna'])
+        subset = subset[subset['Comuna'] != 'Sin clasificación']
+        nuevos_nombres = [col.split('.')[0] for col in subset.columns]
+        subset.columns = nuevos_nombres
+        
+        self.extractedData = subset
+        
+    def Tranform(self, comunas, conflictNames):
         dataToLoad = []
         for _, comuna in comunas.iterrows():
-            self.extractedData = self.extractedData[["Codigo comuna", "conectividad"]]
-            comunaData = self.extractedData[self.extractedData['Codigo comuna'] == comuna["comuna_id"]]
-            try:
-                conectividad = int(comunaData["conectividad"].iloc[0])
-                data = {
-                    "conectividad": conectividad,
-                    "fecha" : self.uploadDate,
-                    "flag" : True,
-                    "comuna_id": comuna['comuna_id'],
-                    "dimension_id": getDimension(self.dimension)              
-                  }
+            comunaData = self.extractedData[self.extractedData['Comuna'].str.contains(comuna["nombre"])]
+            if(comunaData.empty):
+                comunaData = self.extractedData[self.extractedData['Comuna'].str.contains(conflictNames[comuna["nombre"]])]
+            for dat in comunaData.iterrows(): 
+                data = {}
+
+                for mes in ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']:
+                    if mes in comunaData.columns:
+                        try:
+                            data[mes.lower()] = float(comunaData[mes].iloc[0])
+                        except (ValueError, TypeError):
+                            data[mes.lower()] = None
+                    else:
+                        data[mes.lower()] = None
+                    
+                data["fecha"] = self.uploadDate
+                data["flag"] = True
+                data["comuna_id"] = comuna['comuna_id']
+                data["dimension_id"] = getDimension(self.dimension)      
+
+                    
                 dataToLoad.append(data)
-            except:
-                conectividad = 0
-                print("No existe información de: ", comuna['nombre'])
+             
         return(dataToLoad)
     
     def Load(self, data):
         self.querys.loadFileTransactional(self.tableName, data)
 
     def ETLProcess(self):
+        conflictNames = {
+            'Aysén' : 'Aisén',
+            'Requínoa': 'Requinoa',
+            'Tiltil': 'Til Til',
+            'Hualaihué': 'Hualaihue',
+            'Marchigüe': 'Marchihue',
+            'Máfil': 'Mafil', 
+            'Alto del Carmen': 'Alto Del Carmen'
+        }
+        
         maxDate = self.querys.getMaxDate(self.tableName) 
         try:
             if maxDate == None or self.uploadDate > maxDate:
                 self.Extract()
                 self.querys.updateFlagFuente(self.tableName)
                 comunas = self.localidades.getDataComunas()
-                data = self.Tranform(comunas)
+                data = self.Tranform(comunas, conflictNames)
                 self.Load(data)
             else:
                 print("Datos en bruto ya actualizados: ", self.fuente)
@@ -73,15 +101,15 @@ class ETL_Transactional:
 class ETL_Processing:
     def __init__(self, querys, localidades):
         # Para la base de datos
-        self.fuente = "Subtel_antenas"              
-        self.nombreIndicador = "Numero de antenas"
+        self.fuente = "Subtel_Conexion_fija_internet"              
+        self.nombreIndicador = "Promedio anual de conexiones de internet fija"
         
         # informacion indicador
-        self.indicador_id = 1  ## Valor numerico, revisar si no existe en bd
+        self.indicador_id = 6  ## Valor numerico, revisar si no existe en bd
         self.dimension = "Tecnologia"
         self.prioridad = 1
-        self.url =  "https://antenas.subtel.gob.cl/leydetorres/mapaAntenasAutorizadas.html"
-        self.descripcion = "Indicador asociado al numero de antenas en el pais"
+        self.url =  "https://www.subtel.gob.cl/estudios-y-estadisticas/internet/"
+        self.descripcion = "Indicador asociado al numero de conexiones fijas de internet"
         
         # << No modificar >>
         self.tableName = "data_" + self.fuente
@@ -100,8 +128,12 @@ class ETL_Processing:
     def Transform(self, comuna):
         df = self.transaccionalData
         df_merged = df.merge(comuna, left_on='comuna_id', right_on='comuna_id', how='right')
-        df_merged['valor'] = df_merged['conectividad'] / comuna['poblacion']
-        data = df_merged[['comuna_id', 'valor', 'dimension_id']]
+        cols = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
+        df_mean = df_merged[cols].mean(axis = 1)       
+        
+        df_merged['valor'] = df_mean
+        df_merged = df_merged[['comuna_id', 'valor', 'dimension_id']]        
+        data = df_merged.groupby('comuna_id').mean()
         
         normalized = dataNormalize(data)
         return normalized

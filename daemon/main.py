@@ -9,11 +9,9 @@ import psycopg2
 
 from src.db.localidades import Localidades
 from sqlalchemy import create_engine
-from src.calculo.dimensiones import Dimensiones
-from src.calculo.bienestar import Bienestar
 from src.calculo.calculoRegiones import calculoRegiones
 from src.calculo.calculoPais import calculoPais
-
+from src.calculo.calculoComunas import calculoComunas
 from src.db import db
 from src.db import dbQuerys
 
@@ -62,9 +60,9 @@ for archivo_py in archivos_py:
     print(">")
         
 # Calculo dimensiones
-calculoDimensiones = Dimensiones(dbEngineProcessing, localidadesTransaccional)
-calculoBienestar = Bienestar(dbEngineProcessing, localidadesTransaccional)
+
 
 # Calculo externos
+calculoComunas = calculoComunas(dbEngineProcessing, localidadesTransaccional)
 calculoRegiones = calculoRegiones(dbEngineProcessing, localidadesTransaccional)
 calculoPais = calculoPais(dbEngineProcessing, localidadesTransaccional)

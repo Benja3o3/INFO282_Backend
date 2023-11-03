@@ -9,9 +9,9 @@ import psycopg2
 
 from src.db.localidades import Localidades
 from sqlalchemy import create_engine
-from src.calculo.dimensiones import Dimensiones
-from src.calculo.bienestar import Bienestar
 from src.calculo.calculoRegiones import calculoRegiones
+from src.calculo.calculoPais import calculoPais
+from src.calculo.calculoComunas import calculoComunas
 from src.db import db
 from src.db import dbQuerys
 
@@ -50,9 +50,9 @@ try:
     etl = module.ETL_Transactional(querys, localidadesTransaccional)
     etl.ETLProcess()
 
-    # #ETL Processing
-    # etlProcesing = module.ETL_Processing(querys, localidadesTransaccional)
-    # etlProcesing.ETLProcess()        
+    #ETL Processing
+    etlProcesing = module.ETL_Processing(querys, localidadesTransaccional)
+    etlProcesing.ETLProcess()        
             
 except Exception:
     traceback.print_exc()

@@ -3,3 +3,4 @@ SQLAlchemy
 openpyxl
 shapely==1.5.8
 psycopg2-binary
+scikit-learn

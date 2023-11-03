@@ -9,8 +9,6 @@ CREATE TABLE IF NOT EXISTS data_Subtel_antenas(
     dimension_id INT,
     FOREIGN KEY(comuna_id, dimension_id) REFERENCES comunasdimensiones(comuna_id, dimension_id) ON DELETE CASCADE
 );
---CREATE INDEX idx_join ON data_subtel_antenas (comuna_id, dimension_id);
-
 
 CREATE TABLE IF NOT EXISTS data_cem_establecimientos(
     data_id SERIAL PRIMARY KEY,
@@ -27,4 +25,60 @@ CREATE TABLE IF NOT EXISTS data_cem_establecimientos(
     dimension_id INT,
     FOREIGN KEY(comuna_id, dimension_id) REFERENCES comunasdimensiones(comuna_id, dimension_id) ON DELETE CASCADE
 );
---CREATE INDEX idx_join ON data_cem_establecimientos (comuna_id, dimension_id);
+
+
+CREATE TABLE IF NOT EXISTS data_ol_empleados(
+    data_id SERIAL PRIMARY KEY,
+    mujeres_empleadas INT,
+    mujeres_desempleadas INT,
+    hombres_empleados INT,
+    hombres_desempleados INT,
+    total_empleados INT,
+    total_desempleados INT,
+    fecha DATE,
+    flag BOOLEAN,
+    comuna_id INT,
+    dimension_id INT,
+    FOREIGN KEY(comuna_id, dimension_id) REFERENCES comunasdimensiones(comuna_id, dimension_id) ON DELETE CASCADE
+);
+
+
+CREATE TABLE IF NOT EXISTS data_cem_evaluacion_docente(
+    data_id SERIAL PRIMARY KEY,
+    año_evaluacion INT,
+    nombre_establecimiento VARCHAR(255),
+    codigo_departamento_provincial INT,
+    genero_docente INT,
+    fecha_nacimiento_docente VARCHAR(255),
+    puntaje_final FLOAT,
+    escala_final VARCHAR(255),
+    fecha DATE,
+    flag BOOLEAN,
+    comuna_id INT,
+    dimension_id INT,
+    FOREIGN KEY(comuna_id, dimension_id) REFERENCES comunasdimensiones(comuna_id, dimension_id) ON DELETE CASCADE
+);
+
+
+CREATE TABLE IF NOT EXISTS data_subtel_conexion_fija_internet(
+    data_id SERIAL PRIMARY KEY,
+    Ene FLOAT,
+    Feb FLOAT,
+    Mar FLOAT,
+    Abr FLOAT,
+    May FLOAT,
+    Jun FLOAT,
+    Jul FLOAT,
+    Ago FLOAT, 
+    Sep FLOAT, 
+    Oct FLOAT, 
+    Nov FLOAT, 
+    Dic FLOAT,
+    fecha DATE,
+    flag BOOLEAN,
+    comuna_id INT,
+    dimension_id INT,
+    FOREIGN KEY(comuna_id, dimension_id) REFERENCES comunasdimensiones(comuna_id, dimension_id) ON DELETE CASCADE
+);
+
+

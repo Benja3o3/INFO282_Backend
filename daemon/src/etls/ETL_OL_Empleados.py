@@ -7,9 +7,8 @@ from datetime import datetime
 
 class ETL_Transactional:
     def __init__(self, querys, localidades):
-
-        self.fuente = "Subtel_antenas"
-        self.dimension = "Tecnologia"
+        self.fuente = "OL_Empleados"
+        self.dimension = "Economico"
         self.tableName = "data_" + self.fuente
         
         # << No modificar >>
@@ -30,12 +29,22 @@ class ETL_Transactional:
     def Tranform(self, comunas):
         dataToLoad = []
         for _, comuna in comunas.iterrows():
-            self.extractedData = self.extractedData[["Codigo comuna", "conectividad"]]
-            comunaData = self.extractedData[self.extractedData['Codigo comuna'] == comuna["comuna_id"]]
+            comunaData = self.extractedData[self.extractedData['Id_Comuna'] == comuna["comuna_id"]]
             try:
-                conectividad = int(comunaData["conectividad"].iloc[0])
+                mujeres_empleadas = int(comunaData["Mujeres empleadas"].iloc[0])
+                mujeres_desempleadas =int(comunaData["Mujeres desempleadas"].iloc[0])
+                hombres_empleados = int(comunaData["Hombres empleados"].iloc[0])
+                hombres_desempleados = int(comunaData["Hombres desempleados"].iloc[0])
+                total_empleados = int(comunaData["Total empleados"].iloc[0]) 
+                total_desempleados = int(comunaData["Total desempleados"].iloc[0])
                 data = {
-                    "conectividad": conectividad,
+                    "mujeres_empleadas": mujeres_empleadas,
+                    "mujeres_desempleadas": mujeres_desempleadas,
+                    "hombres_empleados": hombres_empleados,
+                    "hombres_desempleados": hombres_desempleados,
+                    "total_empleados": total_empleados,
+                    "total_desempleados": total_desempleados,
+                    
                     "fecha" : self.uploadDate,
                     "flag" : True,
                     "comuna_id": comuna['comuna_id'],
@@ -43,7 +52,6 @@ class ETL_Transactional:
                   }
                 dataToLoad.append(data)
             except:
-                conectividad = 0
                 print("No existe información de: ", comuna['nombre'])
         return(dataToLoad)
     
@@ -73,15 +81,15 @@ class ETL_Transactional:
 class ETL_Processing:
     def __init__(self, querys, localidades):
         # Para la base de datos
-        self.fuente = "Subtel_antenas"              
-        self.nombreIndicador = "Numero de antenas"
+        self.fuente = "OL_Empleados"              
+        self.nombreIndicador = "Tasa de empleabilidad"
         
         # informacion indicador
-        self.indicador_id = 1  ## Valor numerico, revisar si no existe en bd
-        self.dimension = "Tecnologia"
+        self.indicador_id = 4  ## Valor numerico, revisar si no existe en bd
+        self.dimension = "Economico"
         self.prioridad = 1
-        self.url =  "https://antenas.subtel.gob.cl/leydetorres/mapaAntenasAutorizadas.html"
-        self.descripcion = "Indicador asociado al numero de antenas en el pais"
+        self.url =  "https://www.observatorionacional.cl/publicaciones/3110"
+        self.descripcion = "cantidad de trabajadores empleados respecto a la cantidad de población"
         
         # << No modificar >>
         self.tableName = "data_" + self.fuente
@@ -100,7 +108,7 @@ class ETL_Processing:
     def Transform(self, comuna):
         df = self.transaccionalData
         df_merged = df.merge(comuna, left_on='comuna_id', right_on='comuna_id', how='right')
-        df_merged['valor'] = df_merged['conectividad'] / comuna['poblacion']
+        df_merged['valor'] = df_merged['total_empleados'] / comuna['poblacion']
         data = df_merged[['comuna_id', 'valor', 'dimension_id']]
         
         normalized = dataNormalize(data)
