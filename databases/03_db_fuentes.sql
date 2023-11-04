@@ -82,3 +82,14 @@ CREATE TABLE IF NOT EXISTS data_subtel_conexion_fija_internet(
 );
 
 
+CREATE TABLE IF NOT EXISTS data_SISS_Agua_potable(
+    data_id SERIAL PRIMARY KEY,
+    variable VARCHAR(255),
+    cobertura FLOAT,
+    fecha DATE,
+    flag BOOLEAN,
+    comuna_id INT,
+    dimension_id INT,
+    FOREIGN KEY(comuna_id, dimension_id) REFERENCES comunasdimensiones(comuna_id, dimension_id) ON DELETE CASCADE
+);
+
