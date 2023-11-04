@@ -93,3 +93,17 @@ CREATE TABLE IF NOT EXISTS data_SISS_Agua_potable(
     FOREIGN KEY(comuna_id, dimension_id) REFERENCES comunasdimensiones(comuna_id, dimension_id) ON DELETE CASCADE
 );
 
+
+CREATE TABLE IF NOT EXISTS data_CAB_Comisarias(
+    data_id SERIAL PRIMARY KEY,
+    id_comisaria INT,
+    nombre_comisaria VARCHAR(255),
+    direccion VARCHAR(255),
+    tipo_comisaria VARCHAR(255),
+    fecha DATE,
+    flag BOOLEAN,
+    comuna_id INT,
+    dimension_id INT,
+    FOREIGN KEY(comuna_id, dimension_id) REFERENCES comunasdimensiones(comuna_id, dimension_id) ON DELETE CASCADE
+);
+
