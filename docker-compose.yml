@@ -4,6 +4,10 @@ version: "3.8"
 networks:
   filetransfer:
 
+volumes:
+  sources_files:
+
+
 services:
   api:
     build:
@@ -46,6 +50,7 @@ services:
       - ./databases/01_db_transactional.sql:/docker-entrypoint-initdb.d/01_db_transactional.sql
       - ./databases/02_db_processing.sql:/docker-entrypoint-initdb.d/02_db_processing.sql
       - ./databases/03_db_fuentes.sql:/docker-entrypoint-initdb.d/03_db_fuentes.sql
+
   pgadmin:
     image: dpage/pgadmin4
     environment: 
@@ -58,22 +63,31 @@ services:
     depends_on:
       - databases
 
-  ftp-daemon:
+  daemon:
     build:
       context: ./daemon/
       dockerfile: Dockerfile
     restart: always
-    container_name: ftp-daemon
+    container_name: daemon
     networks:
       - filetransfer
     volumes:
-      - ./daemon:/daemon
+      - sources_files:/daemon
     environment:
-      
       HOST: databases
       PORT: 5432
       USER: root
       PASSWORD: root
+
+  ftp:
+    image: bogem/ftp
     ports:
+      - "20:20"
       - "21:21"
-      - "21000-21010:21000-21010"
+      - "47400-47470:47400-47470"
+    environment:
+      - FTP_USER=pan
+      - FTP_PASS=pan123
+      - PASV_ADDRESS=127.0.0.1
+    volumes:
+      - sources_files:/home/vsftpd/Source
