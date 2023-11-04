@@ -6,6 +6,6 @@ COPY . /daemon/
 COPY crontab /var/spool/cron/crontabs/root
 RUN apk add build-base python3-dev
 
-#RUN pip3 install -r /daemon/requirements.txt
+RUN pip3 install -r /daemon/requirements.txt
 CMD ["crond",  "-f"]
 
