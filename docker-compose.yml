@@ -6,6 +6,7 @@ networks:
 
 volumes:
   sources_files:
+    driver: local
 
 
 services:
@@ -72,7 +73,9 @@ services:
     networks:
       - filetransfer
     volumes:
-      - sources_files:/daemon
+      # En deploy descomentar y comentar la otra linea
+      - ./daemon:/daemon
+      #- sources_files:/daemon
     environment:
       HOST: databases
       PORT: 5432
