@@ -25,8 +25,7 @@ VALUES ('Educacional', 'Destinada a la educacion poblacion', 1),
         ('Tecnologia', 'Destinada en la infraestructura tecnologica de la población', 1),
         ('Economico', 'Destinada al nivel socioeconomico de la población', 1),
         ('Ecologico', 'Destinada al area ambiental de la población', 1),
-        ('Movilidad', 'Destinada a la capacidad de movilidad de la población', 1),
-        ('Diversion', 'Destinada al apartado de diversion de la población', 1);
+        ('Cultural', 'Destinada al apartado de cultura de la población', 1);
 
 
 CREATE TABLE IF NOT EXISTS Indicadoresinfo (

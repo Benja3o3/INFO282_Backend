@@ -107,3 +107,32 @@ CREATE TABLE IF NOT EXISTS data_CAB_Comisarias(
     FOREIGN KEY(comuna_id, dimension_id) REFERENCES comunasdimensiones(comuna_id, dimension_id) ON DELETE CASCADE
 );
 
+
+
+CREATE TABLE IF NOT EXISTS data_SERNATUR_Turismo(
+    data_id SERIAL PRIMARY KEY,
+    cut_comuna_origen INT,
+    cut_comuna_destino INT,
+    cut_provincia_origen INT,
+    cut_provincia_destino INT,
+    año INT,
+    Ene FLOAT,
+    Feb FLOAT,
+    Mar FLOAT,
+    Abr FLOAT,
+    May FLOAT,
+    Jun FLOAT,
+    Jul FLOAT,
+    Ago FLOAT, 
+    Sep FLOAT, 
+    Oct FLOAT, 
+    Nov FLOAT, 
+    Dic FLOAT,
+    fecha DATE,
+    flag BOOLEAN,
+    comuna_id INT,
+    dimension_id INT,
+    FOREIGN KEY(comuna_id, dimension_id) REFERENCES comunasdimensiones(comuna_id, dimension_id) ON DELETE CASCADE
+);
+
+

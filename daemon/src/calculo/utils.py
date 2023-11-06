@@ -16,8 +16,7 @@ dimensiones = {
     "Tecnologia": 4,
     "Economico": 5,
     "Ecologico": 6,
-    "Movilidad": 7,
-    "Diversion": 8
+    "Cultural": 7
 }
 
 def dataNormalize(data):
