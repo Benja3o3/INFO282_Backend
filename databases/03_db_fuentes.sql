@@ -135,4 +135,48 @@ CREATE TABLE IF NOT EXISTS data_SERNATUR_Turismo(
     FOREIGN KEY(comuna_id, dimension_id) REFERENCES comunasdimensiones(comuna_id, dimension_id) ON DELETE CASCADE
 );
 
-
+-- 9
+CREATE TABLE IF NOT EXISTS data_BCN_Camaras(
+    data_id SERIAL PRIMARY KEY,
+    camaras FLOAT,
+    fecha DATE,
+    flag BOOLEAN,
+    comuna_id INT,
+    dimension_id INT,
+    FOREIGN KEY(comuna_id, dimension_id) REFERENCES comunasdimensiones(comuna_id, dimension_id) ON DELETE CASCADE
+);
+-- 10
+CREATE TABLE IF NOT EXISTS data_MINVU_Areas_Verdes(
+    data_id SERIAL PRIMARY KEY,
+    sup_total FLOAT,
+    tipo_ep VARCHAR(255),
+    shape_area FLOAT,
+    fecha DATE,
+    flag BOOLEAN,
+    comuna_id INT,
+    dimension_id INT,
+    FOREIGN KEY(comuna_id, dimension_id) REFERENCES comunasdimensiones(comuna_id, dimension_id) ON DELETE CASCADE
+);
+--11
+CREATE TABLE IF NOT EXISTS data_MINVU_Parques_Urbanos(
+    data_id SERIAL PRIMARY KEY,
+    nombre_parque VARCHAR(255),
+    superficie FLOAT,
+    shape_area FLOAT,
+    fecha DATE,
+    flag BOOLEAN,
+    comuna_id INT,
+    dimension_id INT,
+    FOREIGN KEY(comuna_id, dimension_id) REFERENCES comunasdimensiones(comuna_id, dimension_id) ON DELETE CASCADE
+);
+-- --12
+-- CREATE TABLE IF NOT EXISTS data_BCN_Tasa_Mortalidad(
+--     data_id SERIAL PRIMARY KEY,
+--     variable VARCHAR(255),
+--     tasa_mortalidad FLOAT,
+--     fecha DATE,
+--     flag BOOLEAN,
+--     comuna_id INT,
+--     dimension_id INT,
+--     FOREIGN KEY(comuna_id, dimension_id) REFERENCES comunasdimensiones(comuna_id, dimension_id) ON DELETE CASCADE
+-- );

@@ -16,6 +16,11 @@ from src.db import db
 from src.db import dbQuerys
 
 #Cambio de directorio
+if(len(sys.argv) != 2):
+    print("Run python3 testETL.py <name>")
+    exit()
+
+nombreETL = sys.argv[1]
 directorio_padre = os.path.dirname(os.getcwd())
 nuevo_directorio = os.path.join(os.getcwd(),directorio_padre)
 os.chdir(nuevo_directorio)
@@ -38,7 +43,7 @@ archivos_py = glob.glob(os.path.join(ruta_actual, "Scripts/*.py"), recursive=Tru
 
 
 
-nombreETL = input("Ingrese nombre del archivo ETL (sin .py): ")
+# nombreETL = input("Ingrese nombre del archivo ETL (sin .py): ")
 utils_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(utils_dir)
 dirETL = "/daemon/src/etls/" + nombreETL + ".py"
@@ -49,7 +54,7 @@ try:
     #ETL Transactional
     etl = module.ETL_Transactional(querys, localidadesTransaccional)
     etl.ETLProcess()
-
+    print("Paso ETL_Transactional")
     #ETL Processing
     etlProcesing = module.ETL_Processing(querys, localidadesTransaccional)
     etlProcesing.ETLProcess()        
