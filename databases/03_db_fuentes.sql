@@ -107,8 +107,6 @@ CREATE TABLE IF NOT EXISTS data_CAB_Comisarias(
     FOREIGN KEY(comuna_id, dimension_id) REFERENCES comunasdimensiones(comuna_id, dimension_id) ON DELETE CASCADE
 );
 
-
-
 CREATE TABLE IF NOT EXISTS data_SERNATUR_Turismo(
     data_id SERIAL PRIMARY KEY,
     cut_comuna_origen INT,

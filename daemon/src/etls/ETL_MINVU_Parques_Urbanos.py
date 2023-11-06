@@ -30,8 +30,6 @@ class ETL_Transactional:
 
     def Tranform(self, comunas):
         dataToLoad = []
-        print(self.extractedData.columns)
-        print(self.extractedData)
         self.extractedData = self.extractedData[["NOMBRE","COM", "SUPERFICIE", "Shape_Area"]]
         # print(self.extractedData)
 
@@ -46,7 +44,6 @@ class ETL_Transactional:
                     superficie = float(row["SUPERFICIE"])
                     shapeArea = float(row["Shape_Area"])
                 except KeyError as e:
-                    print(e)
                     print("No existe información de: ", comuna['nombre'])
                 data = {
                     "nombre_parque": nombreParque,
@@ -57,7 +54,6 @@ class ETL_Transactional:
                     "comuna_id": comuna['comuna_id'],
                     "dimension_id": getDimension(self.dimension)              
                     }
-                print(data)
                 dataToLoad.append(data)
         return(dataToLoad)
     

@@ -77,7 +77,6 @@ class ETL_Transactional:
                      
                 except Exception as error:
                     print("Error al transformar datos ETL_Establecimientos")    
-                    return 
         print("FINISH")
         return(dataToLoad)
     
@@ -97,8 +96,8 @@ class ETL_Transactional:
                 print("Datos en bruto ya actualizados: ", self.fuente)
                 return True  # Ya actualizados 
             return False     # No actualizados
-        except Exception as error:
-            print(error)
+        except Exception :
+            pass
     
 ## -------------------------------------- ##
 ## -------------------------------------- ##
@@ -111,7 +110,7 @@ class ETL_Processing:
         self.nombreIndicador = "Turismo intercomunal"
         
         # informacion indicador
-        self.indicador_id = 11  ## Valor numerico, revisar si no existe en bd
+        self.indicador_id = 12  ## Valor numerico, revisar si no existe en bd
         self.dimension = "Cultural"
         self.prioridad = 1
         self.url =  "https://www.sernatur.cl/dataturismo/big-data-turismo-interno/"

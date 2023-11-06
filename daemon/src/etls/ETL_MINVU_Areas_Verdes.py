@@ -31,7 +31,6 @@ class ETL_Transactional:
     def Tranform(self, comunas):
         dataToLoad = []
         self.extractedData = self.extractedData[['CUT','SUP_TOTAL_','TIPO_EP', "Shape__Area"]]
-        print(self.extractedData)
         # exit()
         for _, comuna in comunas.iterrows():
             comunaData = self.extractedData[(self.extractedData['CUT'] == comuna['comuna_id'])]
