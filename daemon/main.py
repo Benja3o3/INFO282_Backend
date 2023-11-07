@@ -35,12 +35,10 @@ querys = dbQuerys.Querys(dbEngineTransaccional, dbEngineProcessing)
 ruta_actual = os.path.dirname(__file__)
 archivos_py = glob.glob(os.path.join(ruta_actual, "src/etls/*.py"), recursive=True)
 
-
 for archivo_py in archivos_py:
     nombre_modulo = os.path.splitext(os.path.basename(archivo_py))[0]
     utils_dir = os.path.dirname(os.path.abspath(__file__))
     utils_dir = os.path.join(utils_dir, './')
-
     # Agrega la ruta al sys.path
     sys.path.append(utils_dir)
 
@@ -49,20 +47,19 @@ for archivo_py in archivos_py:
     try:
         etl = module.ETL_Transactional(querys, localidadesTransaccional)
         isUpdated = etl.ETLProcess()
-        
         if(isUpdated == False):
             etlProcesing = module.ETL_Processing(querys, localidadesTransaccional)
             etlProcesing.ETLProcess()        
-                    
-        
     except Exception:
         traceback.print_exc()
-    print(">")
-        
+    print(">---------------------------------------------------------------------------------------")
+print("--- Recopilacion de datos de archivos completados ---")
 # Calculo dimensiones
-
-
 # Calculo externos
 calculoComunas = calculoComunas(dbEngineProcessing, localidadesTransaccional)
+print("Calculo comunas completado")
 calculoRegiones = calculoRegiones(dbEngineProcessing, localidadesTransaccional)
+print("Calculo regiones completado")
 calculoPais = calculoPais(dbEngineProcessing, localidadesTransaccional)
+print("Calculo pais completado")
+

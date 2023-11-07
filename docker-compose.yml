@@ -74,8 +74,8 @@ services:
       - filetransfer
     volumes:
       # En deploy descomentar y comentar la otra linea
-      # - ./daemon:/daemon
-      - sources_files:/daemon
+      - ./daemon:/daemon
+      # - sources_files:/daemon
     environment:
       HOST: databases
       PORT: 5432
