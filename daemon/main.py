@@ -22,16 +22,21 @@ os.chdir(nuevo_directorio)
 
 daemon_folder = os.path.join(os.getcwd(),"./daemon")
 os.chdir(daemon_folder)
-
 #databases
-dbTransaccional = db.database("db_transactional")
-dbEngineTransaccional = dbTransaccional.create_sqlalchemy_engine()
-localidadesTransaccional = Localidades(dbEngineTransaccional)
+try:
+    dbTransaccional = db.database("db_transactional")
+    dbEngineTransaccional = dbTransaccional.create_sqlalchemy_engine()
+    localidadesTransaccional = Localidades(dbEngineTransaccional)
 
-dbProcessing = db.database("db_processing")
-dbEngineProcessing = dbProcessing.create_sqlalchemy_engine()
+    dbProcessing = db.database("db_processing")
+    dbEngineProcessing = dbProcessing.create_sqlalchemy_engine()
 
-querys = dbQuerys.Querys(dbEngineTransaccional, dbEngineProcessing)
+    querys = dbQuerys.Querys(dbEngineTransaccional, dbEngineProcessing)
+except:
+    print("No se pudo conectar con las bases de datos")
+    traceback.print_exc()
+    exit()
+    
 ruta_actual = os.path.dirname(__file__)
 archivos_py = glob.glob(os.path.join(ruta_actual, "src/etls/*.py"), recursive=True)
 
