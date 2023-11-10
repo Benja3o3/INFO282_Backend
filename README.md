@@ -36,7 +36,7 @@ Para vincular la base de datos en PGADMIN se debe hacer click derecho en servido
 ``` 
 
 ## Para FTP
-Descargar FILEZILLA y hacer coneccion rapida a localhost con los
+Descargar FILEZILLA y hacer conexion rapida a localhost con los
 siguientes datos
 
 ``` 

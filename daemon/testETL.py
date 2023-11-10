@@ -9,9 +9,9 @@ import psycopg2
 
 from src.db.localidades import Localidades
 from sqlalchemy import create_engine
-from src.calculo.calculoRegiones import calculoRegiones
-from src.calculo.calculoPais import calculoPais
-from src.calculo.calculoComunas import calculoComunas
+# from src.calculo.calculoRegiones import calculoRegiones
+# from src.calculo.calculoPais import calculoPais
+# from src.calculo.calculoComunas import calculoComunas
 from src.db import db
 from src.db import dbQuerys
 
@@ -48,7 +48,6 @@ ruta_actual = os.path.dirname(__file__)
 archivos_py = glob.glob(os.path.join(ruta_actual, "Scripts/*.py"), recursive=True)
 
 
-
 # nombreETL = input("Ingrese nombre del archivo ETL (sin .py): ")
 utils_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(utils_dir)
@@ -66,4 +65,5 @@ try:
     etlProcesing.ETLProcess()        
             
 except Exception:
+    print("No se logro procesar la ETL")
     traceback.print_exc()

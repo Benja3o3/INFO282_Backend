@@ -56,6 +56,7 @@ for archivo_py in archivos_py:
             etlProcesing = module.ETL_Processing(querys, localidadesTransaccional)
             etlProcesing.ETLProcess()        
     except Exception:
+        print("No se logro procesar la ETL:", archivo_py)
         traceback.print_exc()
     print(">---------------------------------------------------------------------------------------")
 print("--- Recopilacion de datos de archivos completados ---")
