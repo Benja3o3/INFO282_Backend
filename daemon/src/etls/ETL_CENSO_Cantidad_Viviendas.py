@@ -59,7 +59,6 @@ class ETL_Transactional:
                     "comuna_id": comuna['comuna_id'],
                     "dimension_id": getDimension(self.dimension)              
                     }
-                print(data)
                 dataToLoad.append(data)
         return(dataToLoad)
     
