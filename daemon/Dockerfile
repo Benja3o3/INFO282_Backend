@@ -5,6 +5,6 @@ WORKDIR /daemon/
 COPY . /daemon/
 COPY crontab /var/spool/cron/crontabs/root
 
-RUN xargs -t -P4 pip3 install -r /daemon/requirements.txt
+RUN pip3 install -r /daemon/requirements.txt
 CMD ["crond",  "-f"]
 
