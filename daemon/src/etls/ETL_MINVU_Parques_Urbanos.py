@@ -31,9 +31,6 @@ class ETL_Transactional:
     def Tranform(self, comunas):
         dataToLoad = []
         self.extractedData = self.extractedData[["NOMBRE","COM", "SUPERFICIE", "Shape_Area"]]
-        # print(self.extractedData)
-
-        # exit()
         for _, comuna in comunas.iterrows():
             comunaData = self.extractedData[(self.extractedData['COM'] == comuna['comuna_id'])]
             for _, row in comunaData.iterrows():
@@ -118,7 +115,6 @@ class ETL_Processing:
         df_merged["valor"] = sup_total_comunas['superficie'] / comuna['poblacion']
         data = df_merged[['comuna_id', 'valor', 'dimension_id']]
         data['valor'] = data['valor'].fillna(0)
-        print(data)
         normalized = dataNormalize(data)
         return normalized
  

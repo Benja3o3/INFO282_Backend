@@ -6,8 +6,6 @@ import glob
 
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import StandardScaler
-from scipy.special import expit
 
 dimensiones = {
     "Educacional": 1,
@@ -20,11 +18,24 @@ dimensiones = {
 }
 
 def dataNormalize(data):
-    scaler = StandardScaler()
-    data.loc[:, 'valor'] = scaler.fit_transform(data[['valor']])
+    mean = data['valor'].mean()
+    dv = data['valor'].std()
+    data.loc[:, 'valor'] = (data['valor'] - mean) / dv
+
     data.loc[:, 'valor'] = expit(data['valor'])
 
+    
+    
+    # scaler = StandardScaler()
+    # data.loc[:, 'valor'] = scaler.fit_transform(data[['valor']])
+    # data.loc[:, 'valor'] = expit(data['valor'])
+
     return data
+
+def expit(x):
+    #Funcion logistica inversa, transforma valores a un rango entre 0 a 1 
+    #En base a un logaritmo natural
+    return 1 / (1 + np.exp(-x))
 
 def getDimension(dimension):
     try:

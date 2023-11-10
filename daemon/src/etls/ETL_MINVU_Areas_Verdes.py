@@ -42,7 +42,6 @@ class ETL_Transactional:
                     shapeArea = float(row["Shape__Area"])
                     tipoEP = row["TIPO_EP"]
                 except KeyError as e:
-                    # print(e)
                     print("No existe información de: ", comuna['nombre'])
                 data = {
                     "sup_total": superficieTotal,
@@ -53,7 +52,6 @@ class ETL_Transactional:
                     "comuna_id": comuna['comuna_id'],
                     "dimension_id": getDimension(self.dimension)              
                     }
-                # print(data)
                 dataToLoad.append(data)
         return(dataToLoad)
     
@@ -118,7 +116,6 @@ class ETL_Processing:
         df_merged["valor"] = sup_total_comunas['sup_total'] / comuna['poblacion']
         data = df_merged[['comuna_id', 'valor', 'dimension_id']]
         data['valor'] = data['valor'].fillna(0)
-        # print(data)
         normalized = dataNormalize(data)
         return normalized
  

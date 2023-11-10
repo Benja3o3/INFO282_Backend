@@ -30,15 +30,12 @@ class ETL_Transactional:
 
     def Tranform(self, comunas):
         dataToLoad = []
-        # print(self.extractedData)
         #Correccion de datos
         self.extractedData.columns = self.extractedData.iloc[0]
         self.extractedData = self.extractedData[1:]
         self.extractedData = self.extractedData.iloc[1:338, 2:].reset_index() 
         self.extractedData.columns = self.extractedData.columns.str.replace('Viviendas Particulares Ocupadas con Moradores Presentes', 'Viviendas Con Moradores Presentes')
         self.extractedData = self.extractedData[['Código Comuna','Viviendas Colectivas','TOTAL VIVIENDAS','Viviendas Con Moradores Presentes']]
-        # self.extractedData['NOMBRE COMUNA'] = self.extractedData['NOMBRE COMUNA'].str.lower()
-        print(self.extractedData)
         comunaswithoutname = []
         for _, comuna in comunas.iterrows():
 
@@ -52,7 +49,6 @@ class ETL_Transactional:
                     viviendasColectivas = float(row["Viviendas Colectivas"])
                     viviendasMoradoresPresentes = float(row["Viviendas Con Moradores Presentes"])
                 except KeyError as e:
-                    # print(e)
                     print("No existe información de: ", comuna['nombre'])
                 data = {
                     "total_viviendas": totalViviendas,
