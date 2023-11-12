@@ -67,10 +67,12 @@ fin = time.time()
 print("--- Time: {0} secs ---".format(fin-inicio)) 
 # Calculo dimensiones
 # Calculo externos
+inicio = time.time()
 calculoComunas = calculoComunas(dbEngineProcessing, localidadesTransaccional)
 print("Calculo comunas completado")
 calculoRegiones = calculoRegiones(dbEngineProcessing, localidadesTransaccional)
 print("Calculo regiones completado")
 calculoPais = calculoPais(dbEngineProcessing, localidadesTransaccional)
 print("Calculo pais completado")
-
+fin = time.time()
+print("--- Time Calculo: {0} secs ---".format(fin-inicio)) 

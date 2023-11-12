@@ -5,6 +5,10 @@ En consola dentro de la carpeta raiz se debe iniciar con
 ``` bash
     docker-compose up --build
 ```
+Tambien se puede iniciar con
+``` bash
+    docker-compose up -d
+```
 
 ## Visualización de base de datos mediante PGADMIN4
 Se debe ingresar al navegador mediante el url 

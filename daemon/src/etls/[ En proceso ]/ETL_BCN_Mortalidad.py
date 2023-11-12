@@ -8,7 +8,7 @@ from datetime import datetime
 class ETL_Transactional:
     def __init__(self, querys, localidades):
 
-        self.fuente = "BCN_Mortalidad"
+        self.fuente = "BCN_Tasa_Mortalidad"
         self.dimension = "Salud"
         self.tableName = "data_" + self.fuente
         
@@ -25,8 +25,8 @@ class ETL_Transactional:
         return str(self.nombreData)
 
     def Extract(self):
-        self.extractedData = pd.read_csv(self.PATH, delimiter=",")
-        # print (self.extracted)
+        self.extractedData = pd.read_csv(self.PATH, delimiter="\t", na_values='-', encoding='utf-8-sig')
+        print (self.extractedData)
 
     def Tranform(self, comunas, conflictNames):
         dataToLoad = []
@@ -34,31 +34,31 @@ class ETL_Transactional:
 
         print(self.extractedData)
         
-        for _, comuna in comunas.iterrows():
-            # self.extractedData = self.extractedData[["Unidad territorial", " 2020"]]
-            comunaData = self.extractedData[(self.extractedData['Unidad territorial']).str.contains(comuna["nombre"].lower())]
-            self.extractedData[:, -1] = self.extractedData[:, -1].str.replace(r'\s+', '', regex=True)
-            print(self.extractedData)
+        # for _, comuna in comunas.iterrows():
+        #     # self.extractedData = self.extractedData[["Unidad territorial", " 2020"]]
+        #     comunaData = self.extractedData[(self.extractedData['Unidad territorial']).str.contains(comuna["nombre"].lower())]
+        #     self.extractedData[:, -1] = self.extractedData[:, -1].str.replace(r'\s+', '', regex=True)
+        #     print(self.extractedData)
 
-            if(comunaData.empty):
-                comunaData = self.extractedData[(self.extractedData['Unidad territorial']).str.contains(conflictNames[comuna["nombre"]].lower())]
-            valor = 0
-            variable = ""
-            try:
-                variable = str(comunaData[' Variable'].iloc[0])
-                valor = float(comunaData[" 2020"].iloc[0])
-            except:
-                print("No existe información de: ", comuna['nombre'])
+        #     if(comunaData.empty):
+        #         comunaData = self.extractedData[(self.extractedData['Unidad territorial']).str.contains(conflictNames[comuna["nombre"]].lower())]
+        #     valor = 0
+        #     variable = ""
+        #     try:
+        #         variable = str(comunaData[' Variable'].iloc[0])
+        #         valor = float(comunaData[" 2020"].iloc[0])
+        #     except:
+        #         print("No existe información de: ", comuna['nombre'])
 
-            data = {
-                "variable": variable,
-                "tasa_mortalidad": valor,
-                "fecha" : self.uploadDate,
-                "flag" : True,
-                "comuna_id": comuna['comuna_id'],
-                "dimension_id": getDimension(self.dimension)              
-                }
-            # dataToLoad.append(data)
+        #     data = {
+        #         "variable": variable,
+        #         "tasa_mortalidad": valor,
+        #         "fecha" : self.uploadDate,
+        #         "flag" : True,
+        #         "comuna_id": comuna['comuna_id'],
+        #         "dimension_id": getDimension(self.dimension)              
+        #         }
+        #     # dataToLoad.append(data)
         return(dataToLoad)
     
     def Load(self, data):

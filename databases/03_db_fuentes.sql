@@ -180,17 +180,6 @@ CREATE TABLE IF NOT EXISTS data_CENSO_Cantidad_Viviendas(
     FOREIGN KEY(comuna_id, dimension_id) REFERENCES comunasdimensiones(comuna_id, dimension_id) ON DELETE CASCADE
 );
 
--- 
--- CREATE TABLE IF NOT EXISTS data_BCN_Tasa_Mortalidad(
---     data_id SERIAL PRIMARY KEY,
---     variable VARCHAR(255),
---     tasa_mortalidad FLOAT,
---     fecha DATE,
---     flag BOOLEAN,
---     comuna_id INT,
---     dimension_id INT,
---     FOREIGN KEY(comuna_id, dimension_id) REFERENCES comunasdimensiones(comuna_id, dimension_id) ON DELETE CASCADE
--- );
 -- 13
 CREATE TABLE IF NOT EXISTS data_MDFS_Pobreza_Comunal(
     data_id SERIAL PRIMARY KEY,
@@ -202,3 +191,15 @@ CREATE TABLE IF NOT EXISTS data_MDFS_Pobreza_Comunal(
     dimension_id INT,
     FOREIGN KEY(comuna_id, dimension_id) REFERENCES comunasdimensiones(comuna_id, dimension_id) ON DELETE CASCADE
 );
+
+
+-- CREATE TABLE IF NOT EXISTS data_BCN_Tasa_Mortalidad(
+--     data_id SERIAL PRIMARY KEY,
+--     variable VARCHAR(255),
+--     tasa_mortalidad FLOAT,
+--     fecha DATE,
+--     flag BOOLEAN,
+--     comuna_id INT,
+--     dimension_id INT,
+--     FOREIGN KEY(comuna_id, dimension_id) REFERENCES comunasdimensiones(comuna_id, dimension_id) ON DELETE CASCADE
+-- );
