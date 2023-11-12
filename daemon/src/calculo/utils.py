@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlalchemy.sql import text
 import os
-import platform
+# import platform
 import glob
 
 import pandas as pd
@@ -59,3 +59,16 @@ def getLastFile(folderPath):
         return ultimo_archivo
     else:
         print("La carpeta está vacía." ,folderPath)
+
+def createFolderNoProcesado(filePath, folderPath):
+    os.chdir(folderPath)
+    directory = "/daemon/{0}NoProcesado/".format(folderPath)
+    if os.path.exists(directory) and os.path.isdir(directory):
+        print(f"El directorio {directory} existe.")
+    else:
+        os.mkdir(directory)
+        print(f"Directorio creado {directory}")
+    nombre = os.path.basename(filePath)
+    os.rename("/daemon/{0}".format(filePath), directory + nombre)
+    print("No se puede procesar el archivo: {0}".format(filePath))
+    print("Archivo agregado a la carpeta de no procesados:\n {0}{1}".format(directory,nombre))

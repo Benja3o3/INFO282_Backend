@@ -1,5 +1,5 @@
 import pandas as pd
-from src.calculo.utils import getDateFile, getDimension, getLastFile, dataNormalize
+from src.calculo.utils import getDateFile, getDimension, getLastFile, dataNormalize, createFolderNoProcesado
 from sqlalchemy.sql import text
 from psycopg2 import sql
 from datetime import datetime
@@ -97,6 +97,7 @@ class ETL_Transactional:
                 return True  # Ya actualizados 
             return False     # No actualizados
         except Exception :
+            createFolderNoProcesado(self.PATH, self.FOLDER)
             pass
     
 ## -------------------------------------- ##
