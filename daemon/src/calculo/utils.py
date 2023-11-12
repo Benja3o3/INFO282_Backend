@@ -54,7 +54,9 @@ def getLastFile(folderPath):
     archivos = glob.glob(os.path.join(folderPath, '*'))
     archivos.sort(key=os.path.getmtime, reverse=True)
     if archivos:
-        ultimo_archivo = archivos[0]
+        pos = 0
+        while pos < len(archivos) and os.path.isdir(archivos[pos]):
+            ultimo_archivo = archivos[pos]
         print("LastFile:", ultimo_archivo)
         return ultimo_archivo
     else:

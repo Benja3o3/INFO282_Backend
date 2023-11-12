@@ -4,7 +4,7 @@ import importlib
 import importlib.machinery
 import sys
 import traceback
-import psycopg2
+# import psycopg2
 #from dotenv import load_dotenv
 
 from src.db.localidades import Localidades
