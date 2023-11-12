@@ -56,7 +56,8 @@ def getLastFile(folderPath):
     if archivos:
         pos = 0
         while pos < len(archivos) and os.path.isdir(archivos[pos]):
-            ultimo_archivo = archivos[pos]
+            pos += 1
+        ultimo_archivo = archivos[pos]
         print("LastFile:", ultimo_archivo)
         return ultimo_archivo
     else:
