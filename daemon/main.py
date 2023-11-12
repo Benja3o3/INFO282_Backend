@@ -4,6 +4,8 @@ import importlib
 import importlib.machinery
 import sys
 import traceback
+import time
+
 # import psycopg2
 #from dotenv import load_dotenv
 
@@ -16,6 +18,7 @@ from src.db import db
 from src.db import dbQuerys
 
 #Cambio de directorio
+inicio = time.time()
 directorio_padre = os.path.dirname(os.getcwd())
 nuevo_directorio = os.path.join(os.getcwd(),directorio_padre)
 os.chdir(nuevo_directorio)
@@ -60,6 +63,8 @@ for archivo_py in archivos_py:
         traceback.print_exc()
     print(">---------------------------------------------------------------------------------------")
 print("--- Recopilacion de datos de archivos completados ---")
+fin = time.time()
+print("--- Time: {0} secs ---".format(fin-inicio)) 
 # Calculo dimensiones
 # Calculo externos
 calculoComunas = calculoComunas(dbEngineProcessing, localidadesTransaccional)
