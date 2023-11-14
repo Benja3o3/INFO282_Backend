@@ -225,3 +225,12 @@ CREATE TABLE IF NOT EXISTS calculobienestarpais (
     fecha DATE, 
     FOREIGN KEY (pais_id) REFERENCES Pais(pais_id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS log_archivos (
+    id_log INT PRIMARY KEY AUTO_INCREMENT,
+    fecha DATETIME,
+    nombre_archivo VARCHAR(255) NOT NULL,
+    tipo_archivo VARCHAR(8) NOT NULL,
+    error VARCHAR(200),
+    estado VARCHAR(15)
+);
