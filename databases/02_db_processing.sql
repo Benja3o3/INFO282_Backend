@@ -227,10 +227,10 @@ CREATE TABLE IF NOT EXISTS calculobienestarpais (
 );
 
 CREATE TABLE IF NOT EXISTS log_archivos (
-    id_log INT PRIMARY KEY AUTO_INCREMENT,
-    fecha DATETIME,
+    id_log SERIAL PRIMARY KEY,
+    fecha TIMESTAMP,
     nombre_archivo VARCHAR(255) NOT NULL,
-    tipo_archivo VARCHAR(8) NOT NULL,
-    error VARCHAR(200),
+    tipo_archivo VARCHAR(255) NOT NULL,
+    error VARCHAR(255),
     estado VARCHAR(15)
 );

@@ -50,6 +50,7 @@ def getDateFile(file_path):
     print(date)
     return date
 
+
 def getLastFile(folderPath):
     archivos = glob.glob(os.path.join(folderPath, '*'))
     archivos.sort(key=os.path.getmtime, reverse=True)
@@ -75,3 +76,13 @@ def createFolderNoProcesado(filePath, folderPath):
     os.rename("/daemon/{0}".format(filePath), directory + nombre)
     print("No se puede procesar el archivo: {0}".format(filePath))
     print("Archivo agregado a la carpeta de no procesados:\n {0}{1}".format(directory,nombre))
+
+def getExtension(file):
+    _, extension = os.path.splitext(file)
+    return extension
+
+def getDateTimeFile(file_path):
+    PATH = file_path
+    creation_time = os.path.getmtime(PATH)
+    date = datetime.fromtimestamp(creation_time)
+    return date

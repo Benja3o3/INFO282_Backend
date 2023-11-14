@@ -128,3 +128,18 @@ class Querys:
                 conn.commit()   
             except :
                 print("Error al añadir informacion a indicadores")
+
+    def addFileToLog(self, data):
+        with self.dbPro.connect() as conn:
+            try:
+                query = text(
+                    """
+                    INSERT INTO log_archivos (fecha, nombre_archivo, tipo_archivo, error, estado)
+                    VALUES (:fecha, :nombre_archivo, :tipo_archivo, :error, :estado)
+                    """
+                )
+                conn.execute(query, data)
+                conn.commit()   
+            except Exception as error:
+                # print(error)
+                print("Error al añadir informacion al log")

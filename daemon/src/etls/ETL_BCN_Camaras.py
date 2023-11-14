@@ -1,5 +1,5 @@
 import pandas as pd
-from src.calculo.utils import getDateFile, getDimension, getLastFile, dataNormalize, createFolderNoProcesado
+from src.calculo.utils import getDateFile, getDimension, getLastFile, dataNormalize, createFolderNoProcesado, getExtension, getDateTimeFile
 from sqlalchemy.sql import text
 from psycopg2 import sql
 from datetime import datetime
@@ -23,6 +23,22 @@ class ETL_Transactional:
 
     def __string__(self):
         return str(self.nombreData)
+    
+    def addLog(self, error = ""):
+        print("Creando log...")
+        if(error == ""):
+            estado = "Procesado"
+        else:
+            estado = "No procesado"
+        filename = getLastFile(self.FOLDER)
+        self.querys.addFileToLog({
+            "fecha": getDateTimeFile(filename),
+            "nombre_archivo": filename,
+            "tipo_archivo": getExtension(filename),
+            "error": error,
+            "estado": estado
+        })
+        print("Log creado correctamente.")
 
     def Extract(self):
         self.extractedData = pd.read_csv(self.PATH, delimiter=",")
@@ -68,8 +84,8 @@ class ETL_Transactional:
             "Los Angeles": "Los Ángeles",
             "O'Higgins": "O’higgins"
         }
-        maxDate = self.querys.getMaxDate(self.tableName) 
         try:
+            maxDate = self.querys.getMaxDate(self.tableName) 
             # if True:
             if maxDate == None or self.uploadDate > maxDate:
                 self.Extract()
@@ -77,14 +93,17 @@ class ETL_Transactional:
                 comunas = self.localidades.getDataComunas()
                 data = self.Tranform(comunas, conflictNames)
                 self.Load(data)
+                self.addLog()
             else:
                 print("Datos en bruto ya actualizados: ", self.fuente)
                 return True  # Ya actualizados 
             return False     # No actualizados
-        except Exception as error:
+        except (Exception, KeyError) as error:
+            self.addLog(str(error))
             createFolderNoProcesado(self.PATH, self.FOLDER)
             print(error)
-    
+
+
 ## -------------------------------------- ##
 ## -------------------------------------- ##
 ## -------------------------------------- ##
