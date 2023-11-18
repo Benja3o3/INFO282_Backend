@@ -138,7 +138,7 @@ class ETL_Processing:
     def Transform(self, comuna):
         df = self.transaccionalData
         df_merged = df.merge(comuna, left_on='comuna_id', right_on='comuna_id', how='right')
-        df_merged['valor'] = df_merged['camaras'] / comuna['poblacion']
+        df_merged['valor'] = df_merged['camaras'] / (comuna['poblacion']/self.localidades.getPoblacionTotal())
         data = df_merged[['comuna_id', 'valor', 'dimension_id']]
         
         normalized = dataNormalize(data)

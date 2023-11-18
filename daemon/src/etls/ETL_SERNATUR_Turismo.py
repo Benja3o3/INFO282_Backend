@@ -9,7 +9,7 @@ class ETL_Transactional:
     def __init__(self, querys, localidades):
 
         self.fuente = "SERNATUR_Turismo"
-        self.dimension = "Cultural"
+        self.dimension = "Economico"
         self.tableName = "data_" + self.fuente
         
         # << No modificar >>
@@ -130,7 +130,7 @@ class ETL_Processing:
         
         # informacion indicador
         self.indicador_id = 12  ## Valor numerico, revisar si no existe en bd
-        self.dimension = "Cultural"
+        self.dimension = "Economico"
         self.prioridad = 1
         self.url =  "https://www.sernatur.cl/dataturismo/big-data-turismo-interno/"
         self.descripcion = "Indicador asociado al turismo interneto del pais"
@@ -160,7 +160,7 @@ class ETL_Processing:
         data = data.groupby('comuna_id')['valor'].sum().reset_index()
         
         data = data.merge(comuna, left_on='comuna_id', right_on='comuna_id', how='right')
-        data['valor'] = data['valor'] / comuna['poblacion']        
+        data['valor'] = data['valor'] / (comuna['poblacion']/self.localidades.getPoblacionTotal())
         data['dimension_id'] = self.dimension
         data = df_merged[['comuna_id', 'valor', 'dimension_id']]
 

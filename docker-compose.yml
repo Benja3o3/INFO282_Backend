@@ -7,7 +7,7 @@ networks:
 volumes:
   sources_files:
     driver: local
-
+    external: false
 
 services:
   api:
@@ -73,9 +73,9 @@ services:
     networks:
       - filetransfer
     volumes:
-      # En deploy descomentar y comentar la otra linea
-      - ./daemon:/daemon
-      # - sources_files:/daemon
+      - ./daemon/src/etls:/daemon/src/etls
+      - sources_files:/daemon/Source:ro
+
     environment:
       HOST: databases
       PORT: 5432
@@ -83,7 +83,10 @@ services:
       PASSWORD: root
 
   ftp:
+    build:
+      context: ./daemon/
     image: bogem/ftp
+    container_name: ftp
     ports:
       - "20:20"
       - "21:21"
@@ -93,4 +96,7 @@ services:
       - FTP_PASS=pan123
       - PASV_ADDRESS=127.0.0.1
     volumes:
-      - sources_files:/home/vsftpd/Source
+      - sources_files:/home/vsftpd:ro
+
+      # Permisos se deben configurar manualmente
+      # añadir esta linea cmds_denied=DELE

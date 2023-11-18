@@ -142,7 +142,7 @@ class ETL_Processing:
         data = data.reset_index()
         data.columns = ['comuna_id', 'valor']
         data['dimension_id'] = self.dimension_id
-        data['valor'] = data['valor'] / comuna['poblacion']
+        data['valor'] = data['valor'] / (comuna['poblacion']/self.localidades.getPoblacionTotal())
         
         normalized = dataNormalize(data)
         return normalized
@@ -155,7 +155,7 @@ class ETL_Processing:
         data = data.reset_index()
         data.columns = ['comuna_id', 'valor']
         data['dimension_id'] = self.dimension_id
-        data['valor'] = data['valor'] / comuna['poblacion']
+        data['valor'] = data['valor'] / (comuna['poblacion']/self.localidades.getPoblacionTotal())
         
         normalized = dataNormalize(data)
         return normalized
