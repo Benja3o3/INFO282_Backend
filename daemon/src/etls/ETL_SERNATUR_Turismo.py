@@ -160,7 +160,7 @@ class ETL_Processing:
         data = data.groupby('comuna_id')['valor'].sum().reset_index()
         
         data = data.merge(comuna, left_on='comuna_id', right_on='comuna_id', how='right')
-        data['valor'] = data['valor'] / (comuna['poblacion']/self.localidades.getPoblacionTotal())
+        data['valor'] = data['valor'] / comuna['poblacion']
         data['dimension_id'] = self.dimension
         data = df_merged[['comuna_id', 'valor', 'dimension_id']]
 

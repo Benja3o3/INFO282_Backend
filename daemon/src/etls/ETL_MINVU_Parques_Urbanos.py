@@ -101,7 +101,7 @@ class ETL_Processing:
     def __init__(self, querys, localidades):
         # Para la base de datos
         self.fuente = "MINVU_Parques_Urbanos"              
-        self.nombreIndicador = "Minvu_Areas_Verdes"
+        self.nombreIndicador = "Catastro Parques urbanos"
         
         # informacion indicador
         self.indicador_id = 11  ## Valor numerico, revisar si no existe en bd
@@ -131,9 +131,9 @@ class ETL_Processing:
         df_merged = df_merged[['comuna_id','dimension_id','superficie']]
         sup_total_comunas =  df_merged.groupby('comuna_id')['superficie'].sum().reset_index().drop_duplicates(subset="comuna_id")
         df_merged = df_merged.drop_duplicates(subset="comuna_id").reset_index()
-        df_merged["valor"] = sup_total_comunas['superficie'] / (comuna['poblacion']/self.localidades.getPoblacionTotal())
+        df_merged.loc[:, "valor"] = sup_total_comunas['superficie'] / comuna['poblacion']
         data = df_merged[['comuna_id', 'valor', 'dimension_id']]
-        data['valor'] = data['valor'].fillna(0)
+        data.loc[:, 'valor'] = data['valor'].fillna(0)
         normalized = dataNormalize(data)
         return normalized
  

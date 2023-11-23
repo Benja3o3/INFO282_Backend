@@ -149,12 +149,12 @@ class ETL_Processing:
         df = self.transaccionalData
         df_merged = df.merge(comuna, left_on='comuna_id', right_on='comuna_id', how='right')
         cols = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
-        df_mean = df_merged[cols].mean(axis = 1)       
         
-        df_merged['valor'] = df_mean
-        df_merged = df_merged[['comuna_id', 'valor', 'dimension_id']]        
-        data = df_merged.groupby('comuna_id').mean()
-        
+        df_merged['valor'] = df_merged[cols].mean(axis = 1)       
+        df_merged = df_merged[['comuna_id', 'valor', 'dimension_id']]   
+        data = df_merged.groupby('comuna_id').mean().reset_index()
+        data['valor'].fillna(0, inplace=True)
+
         normalized = dataNormalize(data)
         return normalized
  

@@ -14,22 +14,14 @@ dimensiones = {
     "Tecnologia": 4,
     "Economico": 5,
     "Ecologico": 6,
-    "Cultural": 7
+    "Social": 7
 }
 
 def dataNormalize(data):
     mean = data['valor'].mean()
     dv = data['valor'].std()
     data.loc[:, 'valor'] = (data['valor'] - mean) / dv
-
     data.loc[:, 'valor'] = expit(data['valor'])
-
-    
-    
-    # scaler = StandardScaler()
-    # data.loc[:, 'valor'] = scaler.fit_transform(data[['valor']])
-    # data.loc[:, 'valor'] = expit(data['valor'])
-
     return data
 
 def expit(x):

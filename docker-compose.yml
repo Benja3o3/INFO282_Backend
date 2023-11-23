@@ -73,8 +73,9 @@ services:
     networks:
       - filetransfer
     volumes:
+      - ./daemon/Source:/daemon/Source
       - ./daemon/src/etls:/daemon/src/etls
-      - sources_files:/daemon/Source:ro
+      # - sources_files:/daemon/Source:ro
 
     environment:
       HOST: databases

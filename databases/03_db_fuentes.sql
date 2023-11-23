@@ -192,6 +192,119 @@ CREATE TABLE IF NOT EXISTS data_MDFS_Pobreza_Comunal(
     FOREIGN KEY(comuna_id, dimension_id) REFERENCES comunasdimensiones(comuna_id, dimension_id) ON DELETE CASCADE
 );
 
+-- 14
+CREATE TABLE IF NOT EXISTS data_BCN_Rendimiento_academico(
+    data_id SERIAL PRIMARY KEY,
+    retirados_hombres FLOAT,
+    retirados_mujeres FLOAT,
+    retirados_total FLOAT,
+    aprobados_hombre FLOAT,
+    aprobados_mujeres FLOAT,
+    aprobados_total FLOAT,
+    reprobados_hombres FLOAT,
+    reprobados_mujeres FLOAT,
+    reprobados_total FLOAT,
+    fecha DATE,
+    flag BOOLEAN,
+    comuna_id INT,
+    dimension_id INT,
+    FOREIGN KEY(comuna_id, dimension_id) REFERENCES comunasdimensiones(comuna_id, dimension_id) ON DELETE CASCADE
+);
+
+--17
+CREATE TABLE IF NOT EXISTS data_BCN_Docentes(
+    data_id SERIAL PRIMARY KEY,
+    total_docentes FLOAT,
+    fecha DATE,
+    flag BOOLEAN,
+    comuna_id INT,
+    dimension_id INT,
+    FOREIGN KEY(comuna_id, dimension_id) REFERENCES comunasdimensiones(comuna_id, dimension_id) ON DELETE CASCADE
+);
+
+
+--18 --19
+CREATE TABLE IF NOT EXISTS data_BCN_Mortalidad(
+    data_id SERIAL PRIMARY KEY,
+    mortalidad_general FLOAT,
+    mortalidad_hombre FLOAT,
+    mortalidad_mujer FLOAT,
+    fecha DATE,
+    flag BOOLEAN,
+    comuna_id INT,
+    dimension_id INT,
+    FOREIGN KEY(comuna_id, dimension_id) REFERENCES comunasdimensiones(comuna_id, dimension_id) ON DELETE CASCADE
+);
+
+--20
+CREATE TABLE IF NOT EXISTS data_BCN_TV_Pago(
+    data_id SERIAL PRIMARY KEY,
+    cantidad_suscriptores FLOAT,
+    periodo VARCHAR(255),
+    fecha DATE,
+    flag BOOLEAN,
+    comuna_id INT,
+    dimension_id INT,
+    FOREIGN KEY(comuna_id, dimension_id) REFERENCES comunasdimensiones(comuna_id, dimension_id) ON DELETE CASCADE
+);
+
+--21
+CREATE TABLE IF NOT EXISTS data_BCN_Tasa_de_denuncias_social(
+    data_id SERIAL PRIMARY KEY,
+    cantidad_denuncias FLOAT,
+    fecha DATE,
+    flag BOOLEAN,
+    comuna_id INT,
+    dimension_id INT,
+    FOREIGN KEY(comuna_id, dimension_id) REFERENCES comunasdimensiones(comuna_id, dimension_id) ON DELETE CASCADE
+);
+
+--22
+CREATE TABLE IF NOT EXISTS data_BCN_Vulnerabilidad_socio_delictual(
+    data_id SERIAL PRIMARY KEY,
+    indice_vulnerabilidad FLOAT,
+    fecha DATE,
+    flag BOOLEAN,
+    comuna_id INT,
+    dimension_id INT,
+    FOREIGN KEY(comuna_id, dimension_id) REFERENCES comunasdimensiones(comuna_id, dimension_id) ON DELETE CASCADE
+);
+
+-- 22 Densidad poblacion
+
+--23 Indice hacinamiento
+
+CREATE TABLE IF NOT EXISTS data_BCN_Indice_hacinamiento(
+    data_id SERIAL PRIMARY KEY,
+    hacinamiento_critico FLOAT,
+    hacinamiento_medio FLOAT,
+    hacinamiento_ignorado FLOAT,
+    sin_hacinamiento FLOAT,
+    total_viviendas FLOAT,
+    fecha DATE,
+    flag BOOLEAN,
+    comuna_id INT,
+    dimension_id INT,
+    FOREIGN KEY(comuna_id, dimension_id) REFERENCES comunasdimensiones(comuna_id, dimension_id) ON DELETE CASCADE
+);
+
+--24 Deficit habitacional
+CREATE TABLE IF NOT EXISTS data_BCN_Deficit_habitacional(
+    data_id SERIAL PRIMARY KEY,
+    deficit_total FLOAT,
+    hogares_allegados FLOAT,
+    hogares_total FLOAT,
+    nucleos_allegados FLOAT,
+    viviendas_irrecuperables FLOAT,
+    viviendas_totales FLOAT,    
+    fecha DATE,
+    flag BOOLEAN,
+    comuna_id INT,
+    dimension_id INT,
+    FOREIGN KEY(comuna_id, dimension_id) REFERENCES comunasdimensiones(comuna_id, dimension_id) ON DELETE CASCADE
+);
+
+
 
 -- CREATE TABLE IF NOT EXISTS data_BCN_Tasa_Mortalidad(
 --     data_id SERIAL PRIMARY KEY,

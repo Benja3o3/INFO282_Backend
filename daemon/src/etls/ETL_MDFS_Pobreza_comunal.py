@@ -132,9 +132,10 @@ class ETL_Processing:
         df_merged = df_merged[['comuna_id','dimension_id','numero_personas_pobreza']]
         num_personas_pobreza =  df_merged.groupby('comuna_id')['numero_personas_pobreza'].sum().reset_index().drop_duplicates(subset="comuna_id")
         df_merged = df_merged.drop_duplicates(subset="comuna_id").reset_index()
-        df_merged["valor"] = num_personas_pobreza['numero_personas_pobreza'] / (comuna['poblacion']/self.localidades.getPoblacionTotal())
+        df_merged.loc[:, "valor"] = num_personas_pobreza['numero_personas_pobreza'] / comuna['poblacion']
+        
         data = df_merged[['comuna_id', 'valor', 'dimension_id']]
-        data['valor'] = data['valor'].fillna(0)
+        data.loc[:, 'valor'] = data['valor'].fillna(0)
         normalized = dataNormalize(data)
         return normalized
  
@@ -174,7 +175,7 @@ class ETL_Processing:
             self.querys.updateFlagProcessing(self.indicador_id)
             comunas = self.localidades.getDataComunas()
             data = self.Transform(comunas)
-            self.Load(data)
+            # self.Load(data)
 
         except Exception as error:
             print(error)
