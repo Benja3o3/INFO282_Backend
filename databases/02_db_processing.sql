@@ -123,6 +123,8 @@ CREATE TABLE IF NOT EXISTS calculoindicadorescomuna (
     FOREIGN KEY (indicador_id) REFERENCES Indicadoresinfo(indicadoresinfo_id) ON DELETE CASCADE
 );
 
+CREATE INDEX idx_comuna_dimension
+ON calculoindicadorescomuna (comuna_id, flag);
 
 CREATE TABLE IF NOT EXISTS calculobienestarComuna (
     bienestar_id SERIAL PRIMARY KEY,
@@ -132,6 +134,7 @@ CREATE TABLE IF NOT EXISTS calculobienestarComuna (
     fecha DATE, 
     FOREIGN KEY (comuna_id) REFERENCES Comunas(comuna_id) ON DELETE CASCADE
 );
+
 
 -- Calculo Region
 CREATE TABLE IF NOT EXISTS dimensionesregiones (
@@ -234,3 +237,4 @@ CREATE TABLE IF NOT EXISTS log_archivos (
     error VARCHAR(255),
     estado VARCHAR(15)
 );
+

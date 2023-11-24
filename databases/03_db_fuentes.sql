@@ -304,6 +304,22 @@ CREATE TABLE IF NOT EXISTS data_BCN_Deficit_habitacional(
     FOREIGN KEY(comuna_id, dimension_id) REFERENCES comunasdimensiones(comuna_id, dimension_id) ON DELETE CASCADE
 );
 
+--25 SINIA Residuos Peligrosos
+CREATE TABLE IF NOT EXISTS data_SINIA_Residuos(
+    data_id SERIAL PRIMARY KEY,
+    razon_soc VARCHAR(255),
+    nombre_est VARCHAR(255),
+    actividad VARCHAR(255),
+    coordenada_1 FLOAT,
+    coordenada_2 FLOAT,
+    contaminante VARCHAR(255),
+    peligro_id VARCHAR(255),
+    fecha DATE,
+    flag BOOLEAN,
+    comuna_id INT,
+    dimension_id INT,
+    FOREIGN KEY(comuna_id, dimension_id) REFERENCES comunasdimensiones(comuna_id, dimension_id) ON DELETE CASCADE
+);
 
 
 -- CREATE TABLE IF NOT EXISTS data_BCN_Tasa_Mortalidad(
