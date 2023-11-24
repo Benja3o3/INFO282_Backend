@@ -51,23 +51,31 @@ class ETL_Transactional:
             comunaData = self.extractedData[self.extractedData['Unidad territorial'].str.lower().str.contains(comuna["nombre"].lower())]
             if(comunaData.empty):
                 comunaData = self.extractedData[self.extractedData['Unidad territorial'].str.contains(conflictNames[comuna["nombre"]], regex=False)]
-            try:            
-                deficit_total = comunaData[ comunaData[' Variable'] == " Déficit Habitacional Total"].iloc[:, -2].values[0]
-                print(deficit_total)
-            except:
-                denuncias = 0
-            
-            try:                    
+
+            try:          
+                hacinamiento_critico = comunaData[ comunaData[' Variable'] == " Viviendas con Hacinamiento Critico"].iloc[0, -1]
+                hacinamiento_medio = comunaData[ comunaData[' Variable'] == " Viviendas con Hacinamiento Medio"].iloc[0, -1]
+                hacinamiento_ignorado = comunaData[ comunaData[' Variable'] == " Viviendas Hacinamiento Ignorado"].iloc[0, -1]
+                sin_hacinamiento = comunaData[ comunaData[' Variable'] == " Viviendas sin Hacinamiento"].iloc[0, -1]
+                total_viviendas = comunaData[ comunaData[' Variable'] == " Total Viviendas"].iloc[0, -1]
+                
                 data = {
+                    "hacinamiento_critico": hacinamiento_critico,
+                    "hacinamiento_medio": hacinamiento_medio,
+                    "hacinamiento_ignorado": hacinamiento_ignorado,
+                    "sin_hacinamiento": sin_hacinamiento,
+                    "total_viviendas": total_viviendas,
                     "fecha" : self.uploadDate,
                     "flag" : True,
                     "comuna_id": comuna['comuna_id'],
                     "dimension_id": getDimension(self.dimension)              
                     }
-            except:
-                pass
+                dataToLoad.append(data)
                 
-            dataToLoad.append(data)
+            except:
+                print("No existe información de: ", comuna['nombre'])
+                
+                
                 
         return(dataToLoad)
     
@@ -140,7 +148,6 @@ class ETL_Processing:
         df_merged = df.merge(comuna, left_on='comuna_id', right_on='comuna_id', how='right')
         df_merged.loc[:, 'valor'] = df_merged['sin_hacinamiento'] / df_merged['total_viviendas']
         data = df_merged[['comuna_id', 'valor', 'dimension_id']]
-        
         normalized = dataNormalize(data)
         return normalized
     
@@ -178,7 +185,6 @@ class ETL_Processing:
     def ETLProcess(self):
         try:
             self.addETLinfo(self.indicador_idA, self.nombreIndicadorA, self.prioridadA, self.descripcionA, self.urlA, self.dimensionA)
-
             self.Extract()
             self.querys.updateFlagProcessing(self.indicador_idA)
 
