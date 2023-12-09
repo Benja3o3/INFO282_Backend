@@ -75,7 +75,7 @@ services:
     volumes:
       - ./daemon/Source:/daemon/Source
       - ./daemon/src/etls:/daemon/src/etls
-      # - sources_files:/daemon/Source:ro
+      - sources_files:/daemon/Source:ro
 
     environment:
       HOST: databases
@@ -85,8 +85,8 @@ services:
 
   ftp:
     build:
-      context: ./daemon/
-    image: bogem/ftp
+      context: ./FTP/
+      dockerfile: Dockerfile
     container_name: ftp
     ports:
       - "20:20"
@@ -97,7 +97,7 @@ services:
       - FTP_PASS=pan123
       - PASV_ADDRESS=127.0.0.1
     volumes:
-      - sources_files:/home/vsftpd:ro
+      - sources_files:/home/vsftpd
 
       # Permisos se deben configurar manualmente
       # añadir esta linea cmds_denied=DELE
