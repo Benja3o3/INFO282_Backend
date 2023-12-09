@@ -1,2 +1,2 @@
 0 1 * * 1 python3 /daemon/main.py
-* * * * * bash /daemon/backup.sh
+0 1 * * 1 bash /daemon/backup.sh
