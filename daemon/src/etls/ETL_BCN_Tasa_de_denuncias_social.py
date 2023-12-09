@@ -113,7 +113,7 @@ class ETL_Processing:
         
         # Mortalidad general
         self.nombreIndicadorA = "Tasa de denuncias con mayor connotacion social"
-        self.indicador_idA = 21  ## Valor numerico, revisar si no existe en bd
+        self.indicador_idA = 27  ## Valor numerico, revisar si no existe en bd
         self.dimensionA = getDimension("Seguridad")
         self.prioridadA = 1
         self.urlA =  "https://www.bcn.cl/siit/estadisticasterritoriales/tema?id=63"

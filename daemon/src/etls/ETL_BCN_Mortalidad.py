@@ -130,7 +130,7 @@ class ETL_Processing:
         
         # Mortalidad general
         self.nombreIndicadorA = "Tasa de mortalidad"
-        self.indicador_idA = 18  ## Valor numerico, revisar si no existe en bd
+        self.indicador_idA = 26  ## Valor numerico, revisar si no existe en bd
         self.dimensionA = getDimension("Salud")
         self.prioridadA = 1
         self.urlA =  "https://www.bcn.cl/siit/estadisticasterritoriales/tema?id=57"
@@ -138,7 +138,7 @@ class ETL_Processing:
 
         # Mortalidad mujeres
         self.nombreIndicadorB = "Tasa de mortalidad en Mujeres"
-        self.indicador_idB = 19  ## Valor numerico, revisar si no existe en bd
+        self.indicador_idB = 27  ## Valor numerico, revisar si no existe en bd
         self.dimensionB = getDimension("Salud")
         self.prioridadB = 1
         self.urlB =  "https://www.bcn.cl/siit/estadisticasterritoriales/tema?id=57"

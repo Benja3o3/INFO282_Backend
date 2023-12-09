@@ -43,12 +43,10 @@ class ETL_Processing:
         data.loc[:, 'valor'] = 1 - comuna['poblacion'] / comuna['area']
         data.loc[:, 'dimension_id'] = self.dimension
         normalized = dataNormalize(data)
-        print(normalized)
         return normalized
  
     def Load(self, data):    
         all_data = [] 
-        print(data)
         count = 0
         for _, values in data.iterrows():
             valor = values['valor']
@@ -63,7 +61,6 @@ class ETL_Processing:
                 "comuna_id" : comuna_id,
                 "indicador_id": self.indicador_id
             }
-            print(data)
             all_data.append(data)
         self.querys.loadDataProcessing(all_data)
         

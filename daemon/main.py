@@ -16,6 +16,7 @@ from src.calculo.calculoPais import calculoPais
 from src.calculo.calculoComunas import calculoComunas
 from src.db import db
 from src.db import dbQuerys
+import concurrent.futures
 
 #Cambio de directorio
 inicio = time.time()
@@ -43,7 +44,29 @@ except:
 ruta_actual = os.path.dirname(__file__)
 archivos_py = glob.glob(os.path.join(ruta_actual, "src/etls/*.py"), recursive=True)
 
-for archivo_py in archivos_py:
+# for archivo_py in archivos_py:
+#     nombre_modulo = os.path.splitext(os.path.basename(archivo_py))[0]
+#     utils_dir = os.path.dirname(os.path.abspath(__file__))
+#     utils_dir = os.path.join(utils_dir, './')
+#     # Agrega la ruta al sys.path
+#     sys.path.append(utils_dir)
+
+#     loader = importlib.machinery.SourceFileLoader(nombre_modulo, archivo_py)
+#     module = loader.load_module()
+#     try:
+#         etl = module.ETL_Transactional(querys, localidadesTransaccional)
+#         etl.ETLProcess()
+    
+#         etlProcesing = module.ETL_Processing(querys, localidadesTransaccional)
+#         etlProcesing.ETLProcess()        
+#     except Exception:
+#         print("No se logro procesar la ETL:", archivo_py)
+#         traceback.print_exc()
+#     print(">---------------------------------------------------------------------------------------")
+    
+    
+    
+def process_file(archivo_py):
     nombre_modulo = os.path.splitext(os.path.basename(archivo_py))[0]
     utils_dir = os.path.dirname(os.path.abspath(__file__))
     utils_dir = os.path.join(utils_dir, './')
@@ -52,16 +75,27 @@ for archivo_py in archivos_py:
 
     loader = importlib.machinery.SourceFileLoader(nombre_modulo, archivo_py)
     module = loader.load_module()
+
     try:
         etl = module.ETL_Transactional(querys, localidadesTransaccional)
-        isUpdated = etl.ETLProcess()
-        if(isUpdated == False):
-            etlProcesing = module.ETL_Processing(querys, localidadesTransaccional)
-            etlProcesing.ETLProcess()        
+        etl.ETLProcess()
+
+        etlProcesing = module.ETL_Processing(querys, localidadesTransaccional)
+        etlProcesing.ETLProcess()        
     except Exception:
-        print("No se logro procesar la ETL:", archivo_py)
+        print("No se logró procesar la ETL:", archivo_py)
         traceback.print_exc()
-    print(">---------------------------------------------------------------------------------------")
+    print(">---------------------------------------------------------------------------------------")   
+
+max_threads = os.cpu_count()
+num_threads = min(8, max_threads) if max_threads else 1
+
+with concurrent.futures.ThreadPoolExecutor(max_workers=num_threads) as executor:
+    executor.map(process_file, archivos_py)
+
+
+
+    
 print("--- Recopilacion de datos de archivos completados ---")
 fin = time.time()
 print("--- Time: {0} secs ---".format(fin-inicio)) 
