@@ -21,8 +21,8 @@ services:
     environment:
       - HOST=databases
       - PORT=5432
-      - USER=root
-      - PASSWORD=root
+      - USER=uach
+      - PASSWORD=uachbienestar2023
       - PROCESSINGDB=db_processing
       - TRANSACTIONALDB=db_transactional
     container_name: api
@@ -40,8 +40,8 @@ services:
     restart: always
     environment:
       - DATABASE_HOST=127.0.0.1
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=root
+      - POSTGRES_USER=uach
+      - POSTGRES_PASSWORD=uachbienestar2023
     networks:
       - filetransfer
     ports: 
@@ -80,8 +80,8 @@ services:
     environment:
       HOST: databases
       PORT: 5432
-      USER: root
-      PASSWORD: root
+      USER: uach
+      PASSWORD: uachbienestar2023
 
   ftp:
     build:
@@ -93,8 +93,8 @@ services:
       - "21:21"
       - "47400-47470:47400-47470"
     environment:
-      - FTP_USER=pan
-      - FTP_PASS=pan123
+      - FTP_USER=uach
+      - FTP_PASS=uachbienestar2023
       - PASV_ADDRESS=127.0.0.1
     volumes:
       - sources_files:/home/vsftpd

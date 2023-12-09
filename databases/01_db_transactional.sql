@@ -1,6 +1,6 @@
 CREATE DATABASE db_transactional
     WITH
-    OWNER = root
+    OWNER = uach
     ENCODING = 'UTF8'
     LC_COLLATE = 'en_US.utf8'
     LC_CTYPE = 'en_US.utf8'
