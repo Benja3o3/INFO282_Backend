@@ -76,6 +76,7 @@ services:
       - ./daemon/Source:/daemon/Source
       - ./daemon/src/etls:/daemon/src/etls
       - sources_files:/daemon/Source:ro
+      - ./daemon/backup:/daemon/backup
 
     environment:
       HOST: databases
@@ -98,6 +99,3 @@ services:
       - PASV_ADDRESS=127.0.0.1
     volumes:
       - sources_files:/home/vsftpd
-
-      # Permisos se deben configurar manualmente
-      # añadir esta linea cmds_denied=DELE
