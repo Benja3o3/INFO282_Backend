@@ -30,9 +30,10 @@ ORDER BY di.nombre;`;
 export const getIndicadoresOneRegion = (comunaId: string) => `SELECT
 di.nombre as dimension,
 ii.nombre as indicador,
-ci.valor
+MAX(ci.valor) as valor
 FROM calculoindicadoresregion ci
 JOIN dimensionesinfo di ON ci.dimension_id = di.dimension_id
 JOIN indicadoresinfo ii ON ii.indicadoresinfo_id = ci.indicador_id
 WHERE ci.flag = true AND ci.region_id = '${comunaId}'
+GROUP BY di.nombre, ii.nombre
 ORDER BY dimension, indicador`;
