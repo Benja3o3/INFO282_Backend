@@ -86,7 +86,7 @@ services:
 
   ftp:
     build:
-      context: ./FTP/
+      context: ./ftp/
       dockerfile: Dockerfile
     container_name: ftp
     ports:
