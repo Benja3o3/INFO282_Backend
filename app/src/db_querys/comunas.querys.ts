@@ -1,9 +1,17 @@
-export const getBienestarAllComunas = () => `SELECT
-comuna_id,
-valor_bienestar
-FROM calculobienestarcomuna
-WHERE flag = true
-ORDER BY comuna_id;`;
+export const getBienestarAllComunas = () => `
+  SELECT
+    cb.comuna_id,
+    c.nombre as nombre_comuna,
+    cb.valor_bienestar
+  FROM
+    calculobienestarcomuna cb
+  JOIN
+    Comunas c ON cb.comuna_id = c.comuna_id
+  WHERE
+    cb.flag = true
+  ORDER BY
+    cb.comuna_id;
+`;
 
 export const getBienestarOneComuna = (comunaId: string) => `SELECT
 valor_bienestar

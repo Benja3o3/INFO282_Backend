@@ -31,3 +31,4 @@ export async function getIndicadoresByComuna(req: Request, res: Response) {
   const indicadores = await pool.query(getIndicadoresOneComuna(req.params.id));
   return res.json(indicadores.rows);
 }
+

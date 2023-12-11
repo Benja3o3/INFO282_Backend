@@ -69,6 +69,7 @@ DROP TABLE IF EXISTS tempRegion;
 
 CREATE TABLE IF NOT EXISTS Comunas (
     comuna_id INT PRIMARY KEY,
+    nombre VARCHAR(255),
     region_id INT,
     FOREIGN KEY (region_id) REFERENCES Regiones(region_id) ON DELETE CASCADE
 );
@@ -76,8 +77,9 @@ CREATE TABLE IF NOT EXISTS Comunas (
 CREATE TABLE tempComuna (data jsonb);
 COPY tempComuna (data) FROM '/docker-entrypoint-initdb.d/jsonFiles/comunasDB.json';
 
-INSERT INTO Comunas (comuna_id, region_id)
+INSERT INTO Comunas (comuna_id, nombre, region_id)
 SELECT DISTINCT (data->>'CUT')::INT,
+    (data->>'nombre')::VARCHAR(255) as nombre,
     (data->>'region_id')::INT as region_id
 FROM tempComuna
 WHERE NOT EXISTS (
