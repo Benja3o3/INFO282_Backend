@@ -15,4 +15,6 @@ router.get("/comunas/dimension/categoria/:id", getDimensionesByCategoria);
 router.get("/comunas/dimension/:id", getDimensionesByComuna);
 router.get("/comunas/indicador/:id", getIndicadoresByComuna);
 
+
+
 export default router;

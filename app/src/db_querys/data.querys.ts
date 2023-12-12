@@ -67,3 +67,10 @@ Indicadoresinfo ii ON pic.indicador_id = ii.indicadoresinfo_id
 ORDER BY
 p.pais_id, d.dimension_id, ii.indicadoresinfo_id;
 `;
+
+
+export const indicadoresData = () => `
+SELECT   indicadoresinfo.*, 
+        dimensionesinfo.nombre AS dim_nombre
+FROM indicadoresinfo
+JOIN dimensionesinfo ON indicadoresinfo.dimension = dimensionesinfo.dimension_id`
